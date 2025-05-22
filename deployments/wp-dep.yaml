@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: wordpress
+  labels:
+    app: wordpress
+    k8slens-edit-resource-version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      volumes:
+        - name: nfs-wp-content
+          nfs:
+            server: 10.100.0.148
+            path: /vol-aks-test
+        - name: wp-config
+      containers:
+        - name: wordpress
+          image: wordpress:6.2
+          env:
+            - name: TAR_OPTIONS
+              value: '--no-same-owner'
+          resources:
+            limits:
+              memory: 500Mi
+            requests:
+              memory: 100Mi
+          volumeMounts:
+            - name: nfs-wp-content
+              mountPath: /var/www/html/wp-content
+            - name: wp-config
+              mountPath: /var/www/html/wp-config.php
+              subPath: wp-config.php
+            - name: wp-config
+              mountPath: /var/www/html/.htaccess
+              subPath: .htaccess
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext:
+        runAsUser: 33
+        runAsGroup: 33
+        fsGroup: 33
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: compute
+                    operator: In
+                    values:
+                      - hpc
+      schedulerName: default-scheduler
+      tolerations:
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
