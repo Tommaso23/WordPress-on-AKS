@@ -28,6 +28,12 @@ param databaseName string
 param sqlVersion string = '8.0.21'
 param sqlServerSKU string = 'Standard_B1ms'
 
+
+// AKS Cluster //
+param kubernetesVersion string = '1.31.7'
+param agentPoolSize string = 'Standard_D4as_v5'
+param userPoolSize string = 'Standard_D4as_v5'
+
 var subnets = [
   {
     subnetAddrPrefix: aksSubnetName
@@ -98,7 +104,7 @@ module mysql './modules/mysql.bicep' = {
   ]
 }
 
-module aksPrivateDnsZone './modules/privateDnsZone.bicep' = {
+module aksPrivateDnsZone './modules/privatednszone.bicep' = {
   name: 'aksPrivateDnsZone'
   scope: resourceGroup(resourceGroupName)
   params: {
