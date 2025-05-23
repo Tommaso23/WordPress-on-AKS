@@ -2,7 +2,7 @@ targetScope = 'subscription'
 param location string = deployment().location
 
 param workloadName string
-param locationalias string = 'itn'
+param locationalias string
 param resourceGroupName string = 'rg-aks-${workloadName}-test-${locationalias}'
 
 param virtualNetworkName string = 'vnet-aks-${workloadName}-test-${locationalias}'
@@ -19,6 +19,10 @@ param netappSubnetAddrPrefix string = '10.100.0.144/28'
 
 var serviceName = 'sqlServer'
 var dnsZoneName = 'privatelink.mysql.database.azure.com'
+
+param sqlServerName string = 'sql-${workloadName}-${locationalias}'
+param sqlVersion string = '8.0.21'
+param sqlServerSKU string = 'Standard_B1ms'
 
 var subnets = [
   {

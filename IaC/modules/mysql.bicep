@@ -4,37 +4,36 @@ param sqlAdministratorLogin string
 @secure()
 param sqlAdministratorLoginPassword string
 param databaseName string
+param sqlVersion string
+param sqlServerSKU string
 
 
-resource sqlServer 'Microsoft.Sql/servers@2023-08-01' = {
+resource sqlServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
   name: sqlServerName
   location: location
-  tags: {
-    displayName: sqlServerName
-  }
   properties: {
     administratorLogin: sqlAdministratorLogin
     administratorLoginPassword: sqlAdministratorLoginPassword
-    version: '12.0'
-    publicNetworkAccess: 'Disabled'
-  }
+    version: sqlVersion
+    network: {
+      publicNetworkAccess: 'Disabled'
+    }
+    storage: {
+      storageSizeGB: 20
+      iops: 360
+    }
+   }
+    sku: {
+      name: sqlServerSKU
+      tier: 'Burstable'
+    }
 }
 
 resource database 'Microsoft.Sql/servers/databases@2023-08-01' = {
   name: databaseName
   location: location
-  sku: {
-    name: 'Basic'
-    tier: 'Basic'
-    capacity: 5
-  }
-  tags: {
-    displayName: databaseName
-  }
   properties: {
-    collation: 'SQL_Latin1_General_CP1_CI_AS'
-    maxSizeBytes: 104857600
-    sampleName: 'AdventureWorksLT'
+    collation: 'utf8mb3_general_ci'
   }
   dependsOn: [
     sqlServer
