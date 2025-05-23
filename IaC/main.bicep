@@ -17,6 +17,8 @@ param privateLinkSubnetAddrPrefix string = '10.100.0.128/28'
 param netappSubnetName string = 'snet-netapp-aks'
 param netappSubnetAddrPrefix string = '10.100.0.144/28'
 
+var serviceName = 'sqlServer'
+var dnsZoneName = 'privatelink.mysql.database.azure.com'
 
 var subnets = [
   {
@@ -65,6 +67,50 @@ module aksVirtualnetwork 'modules/virtualnetwork.bicep' = {
     vnetName: virtualNetworkName
     vnetAddrPrefix: vnetAddrPrefix
     subnets: subnets
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
+
+module mysql './modules/mysql.bicep' = {
+  name: 'mysql'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    sqlServerName: 'sql-${workloadName}-${locationalias}'
+    location: location
+    sqlAdministratorLogin: 'sqladmin'
+    sqlAdministratorLoginPassword: 'P@ssw0rd1234!'
+    databaseName: 'db-${workloadName}-${locationalias}'
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
+
+module aksPrivateDnsZone './modules/privateDnsZone.bicep' = {
+  name: 'aksPrivateDnsZone'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    dnsZoneName: dnsZoneName
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkId: aksVirtualnetwork.outputs.vnetId
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
+
+module privateEndpoint './modules/privateendpoint.bicep' = {
+  name: 'privateEndpoint'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    privateEndpointName: 'pe-${workloadName}-${locationalias}'
+    subnetPrivateEndpointId: aksVirtualnetwork.outputs.subnetsId[2]
+    linkedResourceId: mysql.outputs.sqlServerId
+    serviceName: serviceName
+    privateDnsZoneId: aksPrivateDnsZone.outputs.dnsZoneId
   }
   dependsOn: [
     aksResourceGroup

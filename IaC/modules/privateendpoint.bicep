@@ -3,6 +3,7 @@ param privateEndpointName string
 param subnetPrivateEndpointId string
 param linkedResourceId string
 param serviceName string
+param privateDnsZoneId string
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
   name: privateEndpointName
@@ -34,9 +35,9 @@ resource privateEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZ
       {
         name: 'privatelink.${serviceName}.azure.com'
         properties: {
-          privateDnsZoneId: 'Microsoft.Network/privateDnsZones/privatelink.${serviceName}.azure.com'
+          privateDnsZoneId: privateDnsZoneId
         }
       }
-  ]
-}
+    ]
+  }
 }
