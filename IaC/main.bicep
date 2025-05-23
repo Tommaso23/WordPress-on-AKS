@@ -21,6 +21,10 @@ var serviceName = 'sqlServer'
 var dnsZoneName = 'privatelink.mysql.database.azure.com'
 
 param sqlServerName string = 'sql-${workloadName}-${locationalias}'
+param sqlAdministratorLogin string
+@secure()
+param sqlAdministratorLoginPassword string
+param databaseName string
 param sqlVersion string = '8.0.21'
 param sqlServerSKU string = 'Standard_B1ms'
 
@@ -83,9 +87,11 @@ module mysql './modules/mysql.bicep' = {
   params: {
     sqlServerName: 'sql-${workloadName}-${locationalias}'
     location: location
-    sqlAdministratorLogin: 'sqladmin'
-    sqlAdministratorLoginPassword: 'P@ssw0rd1234!'
+    sqlAdministratorLogin: sqlAdministratorLogin
+    sqlAdministratorLoginPassword: sqlAdministratorLoginPassword
+    sqlVersion: sqlVersion
     databaseName: 'db-${workloadName}-${locationalias}'
+    sqlServerSKU: sqlServerSKU
   }
   dependsOn: [
     aksResourceGroup
