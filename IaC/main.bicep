@@ -34,6 +34,15 @@ param agentPoolSize string = 'Standard_D4as_v5'
 param userPoolSize string = 'Standard_D4as_v5'
 param clusterAuthorizedIPRanges array = []
 
+// NETAPP Files //
+param netappAccountName string = 'netapp-${workloadName}-${locationalias}'
+param capacityPoolName string = 'pool-${workloadName}-${locationalias}'
+param volumeName string = 'vol-${workloadName}-${locationalias}'
+param serviceLevel string = 'Premium'
+param numberOfTB int = 1
+param qosType string = 'Auto'
+param numberOf50GB int = 1
+
 var subnets = [
   {
     subnetAddrPrefix: aksSubnetAddrPrefix
@@ -146,6 +155,25 @@ module aksCluster './modules/akscluster.bicep' = {
     subnetId: aksVirtualnetwork.outputs.aksSubnetId
     clusterAuthorizedIPRanges: clusterAuthorizedIPRanges
   }
+}
+
+module netapp './modules/netapp.bicep' = {
+  name: 'netapp'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    netappAccountName: netappAccountName
+    capacityPoolName: capacityPoolName
+    volumeName: volumeName
+    serviceLevel: serviceLevel
+    numberOfTB: numberOfTB
+    qosType: qosType
+    numberOf50GB: numberOf50GB
+    netappSubnetId: aksVirtualnetwork.outputs.netappSubnetId
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
 }
 
 

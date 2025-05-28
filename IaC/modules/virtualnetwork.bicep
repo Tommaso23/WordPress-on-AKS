@@ -29,6 +29,5 @@ output vnetId string = virtualNetwork.id
 output subnets array = virtualNetwork.properties.subnets
 output aksSubnetId string = virtualNetwork.properties.subnets[0].id
 output privateLinkSubnetId string = virtualNetwork.properties.subnets[2].id
-
-
+output netappSubnetId string = virtualNetwork.properties.subnets[3].id
 
