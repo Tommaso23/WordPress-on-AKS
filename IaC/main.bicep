@@ -24,7 +24,7 @@ param sqlServerName string = 'sql-${workloadName}-${locationalias}'
 param sqlAdministratorLogin string
 @secure()
 param sqlAdministratorLoginPassword string
-param databaseName string
+param databaseName string = 'db-${workloadName}-${locationalias}'
 param sqlVersion string = '8.0.21'
 param sqlServerSKU string = 'Standard_B1ms'
 
@@ -33,6 +33,7 @@ param sqlServerSKU string = 'Standard_B1ms'
 param kubernetesVersion string = '1.31.7'
 param agentPoolSize string = 'Standard_D4as_v5'
 param userPoolSize string = 'Standard_D4as_v5'
+param clusterAuthorizedIPRanges array = []
 
 var subnets = [
   {
@@ -91,12 +92,12 @@ module mysql './modules/mysql.bicep' = {
   name: 'mysql'
   scope: resourceGroup(resourceGroupName)
   params: {
-    sqlServerName: 'sql-${workloadName}-${locationalias}'
+    sqlServerName: sqlServerName
     location: location
     sqlAdministratorLogin: sqlAdministratorLogin
     sqlAdministratorLoginPassword: sqlAdministratorLoginPassword
     sqlVersion: sqlVersion
-    databaseName: 'db-${workloadName}-${locationalias}'
+    databaseName: databaseName
     sqlServerSKU: sqlServerSKU
   }
   dependsOn: [
@@ -132,4 +133,19 @@ module privateEndpoint './modules/privateendpoint.bicep' = {
     aksResourceGroup
   ]
 }
+
+module aksCluster './modules/akscluster.bicep' = {
+  name: 'aksCluster'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    clusterName: 'aks-${workloadName}-${locationalias}'
+    location: location
+    kubernetesVersion: kubernetesVersion
+    agentPoolSize: agentPoolSize
+    userPoolSize: userPoolSize
+    subnetId: aksVirtualnetwork.outputs.subnetsId[0]
+    clusterAuthorizedIPRanges: clusterAuthorizedIPRanges
+  }
+}
+
 

@@ -4,11 +4,7 @@ param kubernetesVersion string
 param agentPoolSize string
 param subnetId string
 param userPoolSize string
-param userAssignedIdentitiesId string
-param userAssignedIdentitiesClientId string
-param userAssignedIdentitiesObjectId string
 param clusterAuthorizedIPRanges array
-param privateDnsZones_private_tombuca_com_externalid string = '/subscriptions/c22222e4-89fd-49ec-9ba0-3b33436cfd42/resourceGroups/rg-aks-test-itn/providers/Microsoft.Network/privateDnsZones/private.tombuca.com'
 
 resource managedClusters_aks_test_itn_001_name_resource 'Microsoft.ContainerService/managedClusters@2025-02-01' = {
   name: clusterName
@@ -108,13 +104,6 @@ resource managedClusters_aks_test_itn_001_name_resource 'Microsoft.ContainerServ
       dnsServiceIP: '172.16.0.10'
       outboundType: 'loadBalancer'
     }
-    identityProfile: {
-      kubeletidentity: {
-        resourceId: userAssignedIdentitiesId
-        clientId: userAssignedIdentitiesClientId
-        objectId: userAssignedIdentitiesObjectId
-      }
-    }
     autoScalerProfile: {
       'balance-similar-node-groups': 'false'
       expander: 'random'
@@ -142,23 +131,16 @@ resource managedClusters_aks_test_itn_001_name_resource 'Microsoft.ContainerServ
       upgradeChannel: 'patch'
       nodeOSUpgradeChannel: 'NodeImage'
     }
-
-
-
-
-
-    disableLocalAccounts: false
-    securityProfile: {
-      workloadIdentity: {
+    azureMonitorProfile: {
+      metrics: {
         enabled: true
+        kubeStateMetrics: {}
       }
-      imageCleaner: {
-        enabled: true
-        intervalHours: 168
-      }
-
     }
     storageProfile: {
+      blobCSIDriver: {
+        enabled: false
+      }
       diskCSIDriver: {
         enabled: false
       }
@@ -169,25 +151,22 @@ resource managedClusters_aks_test_itn_001_name_resource 'Microsoft.ContainerServ
         enabled: false
       }
     }
+    disableLocalAccounts: false
+    securityProfile: {
+      workloadIdentity: {
+        enabled: true
+      }
+      imageCleaner: {
+        enabled: true
+        intervalHours: 168
+      }
+    }
     oidcIssuerProfile: {
       enabled: true
     }
     ingressProfile: {
       webAppRouting: {
-        enabled: true
-        dnsZoneResourceIds: [
-          privateDnsZones_private_tombuca_com_externalid
-        ]
-        nginx: {
-          defaultIngressControllerType: 'AnnotationControlled'
-        }
-      }
-    }
-    workloadAutoScalerProfile: {}
-    azureMonitorProfile: {
-      metrics: {
-        enabled: true
-        kubeStateMetrics: {}
+        enabled: false
       }
     }
     metricsProfile: {
@@ -195,97 +174,14 @@ resource managedClusters_aks_test_itn_001_name_resource 'Microsoft.ContainerServ
         enabled: false
       }
     }
-    bootstrapProfile: {
-      artifactSource: 'Direct'
-    }
+  }
+  identity: {
+    type: 'SystemAssigned'
   }
   sku: {
     name: 'Base'
     tier: 'Standard'
   }
-  identity: {
-    type: 'SystemAssigned'
-  }
 }
 
-resource managedClusters_aks_test_itn_001_name_agentpool 'Microsoft.ContainerService/managedClusters/agentPools@2025-02-01' = {
-  parent: managedClusters_aks_test_itn_001_name_resource
-  name: 'agentpool'
-  properties: {
-    count: 2
-    vmSize: 'Standard_D4as_v5'
-    osDiskSizeGB: 128
-    osDiskType: 'Managed'
-    kubeletDiskType: 'OS'
-    vnetSubnetID: '${virtualNetworks_vnet_spoke_aks_test_itn_externalid}/subnets/snet-clusternodes-aks'
-    maxPods: 110
-    type: 'VirtualMachineScaleSets'
-    availabilityZones: [
-      '1'
-      '2'
-      '3'
-    ]
-    maxCount: 5
-    minCount: 2
-    enableAutoScaling: true
-    scaleDownMode: 'Delete'
-    powerState: {
-      code: 'Running'
-    }
-    orchestratorVersion: '1.31.7'
-    enableNodePublicIP: false
-    nodeTaints: [
-      'CriticalAddonsOnly=true:NoSchedule'
-    ]
-    mode: 'System'
-    osType: 'Linux'
-    osSKU: 'Ubuntu'
-    upgradeSettings: {
-      maxSurge: '10%'
-    }
-    enableFIPS: false
-    securityProfile: {
-      enableVTPM: false
-      enableSecureBoot: false
-    }
-  }
-}
-
-resource managedClusters_aks_test_itn_001_name_userpool 'Microsoft.ContainerService/managedClusters/agentPools@2025-02-01' = {
-  parent: managedClusters_aks_test_itn_001_name_resource
-  name: 'userpool'
-  properties: {
-    count: 2
-    vmSize: 'Standard_D4as_v5'
-    osDiskSizeGB: 128
-    osDiskType: 'Managed'
-    kubeletDiskType: 'OS'
-    vnetSubnetID: '${virtualNetworks_vnet_spoke_aks_test_itn_externalid}/subnets/snet-clusternodes-aks'
-    maxPods: 30
-    type: 'VirtualMachineScaleSets'
-    availabilityZones: [
-      '1'
-      '2'
-      '3'
-    ]
-    maxCount: 6
-    minCount: 1
-    enableAutoScaling: true
-    scaleDownMode: 'Delete'
-    powerState: {
-      code: 'Running'
-    }
-    orchestratorVersion: '1.31.7'
-    enableNodePublicIP: false
-    mode: 'User'
-    osType: 'Linux'
-    osSKU: 'Ubuntu'
-    upgradeSettings: {}
-    enableFIPS: false
-    securityProfile: {
-      enableVTPM: false
-      enableSecureBoot: false
-    }
-  }
-}
 
