@@ -28,7 +28,6 @@ param databaseName string = 'db-${workloadName}-${locationalias}'
 param sqlVersion string = '8.0.21'
 param sqlServerSKU string = 'Standard_B1ms'
 
-
 // AKS Cluster //
 param kubernetesVersion string = '1.31.7'
 param agentPoolSize string = 'Standard_D4as_v5'
@@ -37,29 +36,30 @@ param clusterAuthorizedIPRanges array = []
 
 var subnets = [
   {
-    subnetAddrPrefix: aksSubnetName
-    subnetName: aksSubnetAddrPrefix
+    subnetAddrPrefix: aksSubnetAddrPrefix
+
+    subnetName: aksSubnetName
     vnetName: virtualNetworkName
     nsgId: ''
     routeTableId: ''
   }
   {
-    subnetAddrPrefix: appgatewaySubnetName
-    subnetName: appgatewaySubnetAddrPrefix
+    subnetAddrPrefix: appgatewaySubnetAddrPrefix
+    subnetName: appgatewaySubnetName
     vnetName: virtualNetworkName
     nsgId: ''
     routeTableId: ''
   }
   {
-    subnetAddrPrefix: privateLinkSubnetName
-    subnetName: privateLinkSubnetAddrPrefix
+    subnetAddrPrefix: privateLinkSubnetAddrPrefix
+    subnetName: privateLinkSubnetName
     vnetName: virtualNetworkName
     nsgId: ''
     routeTableId: ''
   }
   {
-    subnetAddrPrefix: netappSubnetName
-    subnetName: netappSubnetAddrPrefix
+    subnetAddrPrefix: netappSubnetAddrPrefix
+    subnetName: netappSubnetName
     vnetName: virtualNetworkName
     nsgId: ''
     routeTableId: ''
@@ -124,7 +124,7 @@ module privateEndpoint './modules/privateendpoint.bicep' = {
   params: {
     location: location
     privateEndpointName: 'pe-${workloadName}-${locationalias}'
-    subnetPrivateEndpointId: aksVirtualnetwork.outputs.subnetsId[2]
+    subnetPrivateEndpointId: aksVirtualnetwork.outputs.privateLinkSubnetId
     linkedResourceId: mysql.outputs.sqlServerId
     serviceName: serviceName
     privateDnsZoneId: aksPrivateDnsZone.outputs.dnsZoneId
@@ -143,7 +143,7 @@ module aksCluster './modules/akscluster.bicep' = {
     kubernetesVersion: kubernetesVersion
     agentPoolSize: agentPoolSize
     userPoolSize: userPoolSize
-    subnetId: aksVirtualnetwork.outputs.subnetsId[0]
+    subnetId: aksVirtualnetwork.outputs.aksSubnetId
     clusterAuthorizedIPRanges: clusterAuthorizedIPRanges
   }
 }

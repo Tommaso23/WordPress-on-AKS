@@ -29,15 +29,12 @@ resource sqlServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
     }
 }
 
-resource database 'Microsoft.Sql/servers/databases@2023-08-01' = {
+resource database 'Microsoft.DBforMySQL/flexibleServers/databases@2023-12-30' = {
+  parent: sqlServer
   name: databaseName
-  location: location
   properties: {
     collation: 'utf8mb3_general_ci'
   }
-  dependsOn: [
-    sqlServer
-  ]
 }
 
 output sqlServerId string = sqlServer.id
