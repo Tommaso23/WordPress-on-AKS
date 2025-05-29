@@ -37,4 +37,19 @@ resource database 'Microsoft.DBforMySQL/flexibleServers/databases@2023-12-30' = 
   }
 }
 
+resource firewallRules 'Microsoft.DBforMySQL/flexibleServers/firewallRules@2023-12-30' = {
+  parent: sqlServer
+  name: 'AllowAzureIPs'
+  dependsOn: [
+    database
+  ]
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
+  }
+}
+
+
 output sqlServerId string = sqlServer.id
+
+

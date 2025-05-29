@@ -37,9 +37,6 @@ resource netAppVolume 'Microsoft.NetApp/netAppAccounts/capacityPools/volumes@202
   parent: netAppCapacityPool
   name: volumeName
   location: location
-  zones: [
-    '1'
-  ]
   properties: {
     serviceLevel: serviceLevel
     creationToken: 'vol-aks-test'

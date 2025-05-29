@@ -17,7 +17,7 @@ param privateLinkSubnetAddrPrefix string = '10.100.0.128/28'
 param netappSubnetName string = 'snet-netapp-aks'
 param netappSubnetAddrPrefix string = '10.100.0.144/28'
 
-var serviceName = 'sqlServer'
+var serviceName = 'mysqlServer'
 var dnsZoneName = 'privatelink.mysql.database.azure.com'
 
 param sqlServerName string = 'sql-${workloadName}-${locationalias}'

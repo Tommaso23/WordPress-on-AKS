@@ -41,3 +41,6 @@ resource privateEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZ
     ]
   }
 }
+
+
+
