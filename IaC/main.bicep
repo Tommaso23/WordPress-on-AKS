@@ -51,6 +51,7 @@ var subnets = [
     vnetName: virtualNetworkName
     nsgId: ''
     routeTableId: ''
+    delegation: ''
   }
   {
     subnetAddrPrefix: appgatewaySubnetAddrPrefix
@@ -58,6 +59,7 @@ var subnets = [
     vnetName: virtualNetworkName
     nsgId: ''
     routeTableId: ''
+    delegation: ''
   }
   {
     subnetAddrPrefix: privateLinkSubnetAddrPrefix
@@ -65,6 +67,7 @@ var subnets = [
     vnetName: virtualNetworkName
     nsgId: ''
     routeTableId: ''
+    delegation: ''
   }
   {
     subnetAddrPrefix: netappSubnetAddrPrefix
@@ -72,6 +75,7 @@ var subnets = [
     vnetName: virtualNetworkName
     nsgId: ''
     routeTableId: ''
+    delegation: 'Microsoft.NetApp/volumes'
   }
 ]
 

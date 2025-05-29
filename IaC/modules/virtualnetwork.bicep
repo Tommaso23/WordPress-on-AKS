@@ -20,6 +20,12 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' = {
         routeTable: subnet.routeTableId == '' ? null : {
           id: subnet.routeTableId
         }
+        delegations: subnet.delegation == '' ? [] : [{
+          name: '${subnet.subnetName}-delegation'
+          properties: {
+            serviceName: subnet.delegation
+          }
+        }]
       }
     }]
   } 
