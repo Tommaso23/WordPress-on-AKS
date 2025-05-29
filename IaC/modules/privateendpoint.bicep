@@ -4,6 +4,11 @@ param subnetPrivateEndpointId string
 param linkedResourceId string
 param serviceName string
 param privateDnsZoneId string
+param virtualNetworkName string
+
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' existing = {
+  name: virtualNetworkName
+}
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
   name: privateEndpointName
@@ -24,6 +29,9 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
       }
     ]
   }
+  dependsOn: [
+    virtualNetwork 
+  ]
 }
 
 

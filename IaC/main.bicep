@@ -141,6 +141,7 @@ module privateEndpoint './modules/privateendpoint.bicep' = {
     linkedResourceId: mysql.outputs.sqlServerId
     serviceName: serviceName
     privateDnsZoneId: aksPrivateDnsZone.outputs.dnsZoneId
+    virtualNetworkName: virtualNetworkName
   }
   dependsOn: [
     aksResourceGroup
