@@ -39,7 +39,7 @@ resource netAppVolume 'Microsoft.NetApp/netAppAccounts/capacityPools/volumes@202
   location: location
   properties: {
     serviceLevel: serviceLevel
-    creationToken: 'vol-aks-test'
+    creationToken: volumeName
     usageThreshold: volumeSize
     exportPolicy: {
       rules: [
