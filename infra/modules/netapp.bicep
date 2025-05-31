@@ -9,6 +9,7 @@ param volumeName string
 param netappSubnetId string
 param numberOf50GB int
 var volumeSize = 53687091200 * numberOf50GB// 50 GiB
+param aksSubnetAddrPrefix string
 
 resource netAppAccount 'Microsoft.NetApp/netAppAccounts@2025-01-01' = {
   name: netappAccountName
@@ -50,7 +51,7 @@ resource netAppVolume 'Microsoft.NetApp/netAppAccounts/capacityPools/volumes@202
           cifs: false
           nfsv3: true
           nfsv41: false
-          allowedClients: '0.0.0.0/0'
+          allowedClients: aksSubnetAddrPrefix
           kerberos5ReadOnly: false
           kerberos5ReadWrite: false
           kerberos5iReadOnly: false
@@ -74,7 +75,7 @@ resource netAppVolume 'Microsoft.NetApp/netAppAccounts/capacityPools/volumes@202
     smbContinuouslyAvailable: false
     encryptionKeySource: 'Microsoft.NetApp'
     ldapEnabled: false
-    unixPermissions: '0777'
+    unixPermissions: '0775'
     coolAccess: false
     avsDataStore: 'Disabled'
     isDefaultQuotaEnabled: false

@@ -175,6 +175,7 @@ module netapp './modules/netapp.bicep' = {
     qosType: qosType
     numberOf50GB: numberOf50GB
     netappSubnetId: aksVirtualnetwork.outputs.netappSubnetId
+    aksSubnetAddrPrefix: aksSubnetAddrPrefix
   }
   dependsOn: [
     aksResourceGroup
