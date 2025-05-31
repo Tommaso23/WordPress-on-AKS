@@ -7,9 +7,7 @@ metadata:
 spec:
   type: LoadBalancer           # Use LoadBalancer for external IP (if your cluster supports it)
   ports:
-    - port: 80                 # External port
-      targetPort: 80           # Container port
-      protocol: TCP
-      name: http
+    - port: 80     
+      targetPort: 8080            # External port
   selector:
     app: wordpress

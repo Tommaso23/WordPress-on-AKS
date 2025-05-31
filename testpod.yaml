@@ -1,21 +1,19 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: busybox
-  namespace: default
+  name: test-perms
 spec:
+  securityContext:
+    runAsUser: 1001
+    fsGroup: 1001
   containers:
-  - image: busybox
-    command:
-    - "/bin/sh"
-    - "-c"
-    - "sleep 3600"
-    imagePullPolicy: IfNotPresent
-    name: busybox
-    volumeMounts:
-    - name: disk01
-      mountPath: /mnt/azure
+    - name: tester
+      image: bitnami/minideb
+      command: ["sleep", "3600"]
+      volumeMounts:
+        - name: wordpress-storage
+          mountPath: /mnt/test
   volumes:
-  - name: disk01
-    persistentVolumeClaim:
-      claimName: pvc-nfs
+    - name: wordpress-storage
+      persistentVolumeClaim:
+        claimName: pvc-nfs
