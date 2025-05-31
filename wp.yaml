@@ -36,13 +36,13 @@ spec:
         name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
-          value: "mysql-aks-test-itn-001.mysql.database.azure.com"
+          value: "sql-bicepdeploy-itn.mysql.database.azure.com"
         - name: WORDPRESS_DB_PASSWORD
           value: "Password123?"
         - name: WORDPRESS_DB_USER
-          value: "mysqladmin"
+          value: "azureuser"
         - name: WORDPRESS_DB_NAME
-          value: "dbakstest001"
+          value: "db-bicepdeploy-itn"
         ports:
         - containerPort: 80
           name: wordpress

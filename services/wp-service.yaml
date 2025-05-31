@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  type: LoadBalancer           # Use LoadBalancer for external IP (if your cluster supports it)
+  ports:
+    - port: 80                 # External port
+      targetPort: 80           # Container port
+      protocol: TCP
+      name: http
+  selector:
+    app: wordpress

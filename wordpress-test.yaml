@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wp
+  namespace: wordpress
+  labels:
+    app: wp
+      k8slens-edit-resource-version: v1
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      volumes:
+      - name: wordpress-data
+        persistentVolumeClaim:
+          claimName: pvc-nfs          # your PVC backed by NetApp Files
+  initContainers:
+  - name: fix-permissions
+    image: busybox
+    command:
+      - sh
+      - -c
+      - |
+        echo "Fixing permissions..."
+        chown -R 33:33 /bitnami/wordpress
+        chmod -R 0777 /bitnami/wordpress
+    volumeMounts:
+    - name: wordpress-data
+      mountPath: /bitnami/wordpress
+    securityContext:
+      fsGroup: 33  
+      runAsUser: 0                      # MUST run as root to chown/chmod
+  containers:
+  - name: wordpress
+    image: wordpress:6.2
+    ports:
+    - name: wordpress
+      containerPort: 80
+      protocol: TCP
+    volumeMounts:
+    - name: wordpress-data
+      mountPath: /var/www/html
+    imagePullPolicy: IfNotPresent
+    restartPolicy: Always
+    securityContext:
+      runAsUser: 33                     # run as www-data user
+      runAsGroup: 33
+      fsGroup: 33      
+    schedulerName: default-scheduler
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: wordpress
+    tier: frontend
+  type: LoadBalancer                   # set group ownership for mounted volume
