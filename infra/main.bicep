@@ -43,6 +43,9 @@ param numberOfTB int = 1
 param qosType string = 'Auto'
 param numberOf50GB int = 1
 
+param applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationalias}'
+param applicationGatewayName string = 'agw-${workloadName}-${locationalias}'
+
 var subnets = [
   {
     subnetAddrPrefix: aksSubnetAddrPrefix
@@ -182,4 +185,30 @@ module netapp './modules/netapp.bicep' = {
   ]
 }
 
+module appGatewayPublicIpAddress './modules/publicipaddress.bicep' = {
+  name: 'appGatewayPublicIpAddress'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    publicIpAddressName: applicationGatewayPublicIpAddressName
+    location: location
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
+
+module applicationGateway './modules/Applicationgateway.bicep' = {
+  name: 'applicationGateway'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    applicationGatewayName: applicationGatewayName
+    applicationGatewaySubnetId: aksVirtualnetwork.outputs.appGatewaySubnetId
+    appGatewayPublicIpAddressId: appGatewayPublicIpAddress.outputs.publicIpAddressId
+    internalLoadBalancerIp: '10.100.0.7'
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
 

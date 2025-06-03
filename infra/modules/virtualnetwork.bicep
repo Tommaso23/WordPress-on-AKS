@@ -34,6 +34,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' = {
 output vnetId string = virtualNetwork.id
 output subnets array = virtualNetwork.properties.subnets
 output aksSubnetId string = virtualNetwork.properties.subnets[0].id
+output appGatewaySubnetId string = virtualNetwork.properties.subnets[1].id
 output privateLinkSubnetId string = virtualNetwork.properties.subnets[2].id
 output netappSubnetId string = virtualNetwork.properties.subnets[3].id
 
