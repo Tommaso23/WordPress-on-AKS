@@ -5,9 +5,10 @@ metadata:
   labels:
     app: wordpress
 spec:
-  type: LoadBalancer           # Use LoadBalancer for external IP (if your cluster supports it)
+  type: ClusterIP
   ports:
     - port: 80     
-      targetPort: 8080            # External port
+      targetPort: 8080  
+      protocol: TCP          # External port
   selector:
     app: wordpress
