@@ -7,4 +7,4 @@ spec:
   controllerNamePrefix: nginx-internal
   loadBalancerAnnotations: 
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-  loadBalancerIP: "10.100.0.7"
+    

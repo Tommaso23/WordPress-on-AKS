@@ -1,4 +1,4 @@
-using 'main.bicep'
+using '../main.bicep'
 
 param workloadName = 'bicepdeploy'
 param locationalias = 'itn'

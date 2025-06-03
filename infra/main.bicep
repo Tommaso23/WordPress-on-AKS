@@ -45,7 +45,7 @@ param numberOf50GB int = 1
 
 param applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationalias}'
 param applicationGatewayName string = 'agw-${workloadName}-${locationalias}'
-
+param internalLoadBalancerIp string = '10.100.0.62'
 var subnets = [
   {
     subnetAddrPrefix: aksSubnetAddrPrefix
@@ -205,7 +205,7 @@ module applicationGateway './modules/Applicationgateway.bicep' = {
     applicationGatewayName: applicationGatewayName
     applicationGatewaySubnetId: aksVirtualnetwork.outputs.appGatewaySubnetId
     appGatewayPublicIpAddressId: appGatewayPublicIpAddress.outputs.publicIpAddressId
-    internalLoadBalancerIp: '10.100.0.7'
+    internalLoadBalancerIp: internalLoadBalancerIp
   }
   dependsOn: [
     aksResourceGroup

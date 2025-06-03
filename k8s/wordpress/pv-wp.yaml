@@ -11,6 +11,5 @@ spec:
     - vers=3
   nfs:
     server: 10.100.0.148
-    path: /vol-aks-test
-
+    path: /vol-bicepdeploy-itn
 
