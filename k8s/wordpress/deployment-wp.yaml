@@ -24,14 +24,14 @@ spec:
           mountPath: /bitnami/wordpress
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "250m"
+            memory: "512Mi"
+            cpu: "1m"
           limits:
             memory: "512Mi"
-            cpu: "500m"
+            cpu: "1m"
         env:
         - name: WORDPRESS_DATABASE_HOST
-          value: "mysql-aks-test-itn-001.mysql.database.azure.com"
+          value: "sql-bcp-itn.mysql.database.azure.com"
         - name: WORDPRESS_DATABASE_USER
           valueFrom:
             secretKeyRef:
@@ -45,7 +45,7 @@ spec:
         - name: ALLOW_EMPTY_PASSWORD
           value: "no"
         - name: WORDPRESS_DATABASE_NAME
-          value: "dbakstest001"
+          value: "db-bcp-itn"
       volumes:
       - name: wordpress-storage
         persistentVolumeClaim:
