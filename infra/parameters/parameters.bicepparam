@@ -1,6 +1,6 @@
 using '../main.bicep'
 
-param workloadName = 'bicepdeploy'
+param workloadName = 'bcp'
 param locationalias = 'itn'
 param sqlAdministratorLogin = 'azureuser'
 param sqlAdministratorLoginPassword = 'Password123?'

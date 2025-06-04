@@ -17,8 +17,7 @@ param privateLinkSubnetAddrPrefix string = '10.100.0.128/28'
 param netappSubnetName string = 'snet-netapp-aks'
 param netappSubnetAddrPrefix string = '10.100.0.144/28'
 
-var serviceName = 'mysqlServer'
-var dnsZoneName = 'privatelink.mysql.database.azure.com'
+var mySqlDnsZoneName = 'privatelink.mysql.database.azure.com'
 
 param sqlServerName string = 'sql-${workloadName}-${locationalias}'
 param sqlAdministratorLogin string
@@ -42,6 +41,9 @@ param serviceLevel string = 'Premium'
 param numberOfTB int = 1
 param qosType string = 'Auto'
 param numberOf50GB int = 1
+
+param keyVaultDnsZoneName string = 'privatelink.vaultcore.azure.net'
+param keyVaultName string = 'kv-${workloadName}-${locationalias}'
 
 param applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationalias}'
 param applicationGatewayName string = 'agw-${workloadName}-${locationalias}'
@@ -121,11 +123,11 @@ module mysql './modules/mysql.bicep' = {
   ]
 }
 
-module aksPrivateDnsZone './modules/privatednszone.bicep' = {
-  name: 'aksPrivateDnsZone'
+module mySqlPrivateDnsZone './modules/privatednszone.bicep' = {
+  name: 'mySqlPrivateDnsZone'
   scope: resourceGroup(resourceGroupName)
   params: {
-    dnsZoneName: dnsZoneName
+    dnsZoneName: mySqlDnsZoneName
     virtualNetworkName: virtualNetworkName
     virtualNetworkId: aksVirtualnetwork.outputs.vnetId
   }
@@ -134,16 +136,16 @@ module aksPrivateDnsZone './modules/privatednszone.bicep' = {
   ]
 }
 
-module privateEndpoint './modules/privateendpoint.bicep' = {
-  name: 'privateEndpoint'
+module mySQLPrivateEndpoint './modules/privateendpoint.bicep' = {
+  name: 'mySQLPrivateEndpoint'
   scope: resourceGroup(resourceGroupName)
   params: {
     location: location
     privateEndpointName: 'pe-${workloadName}-${locationalias}'
     subnetPrivateEndpointId: aksVirtualnetwork.outputs.privateLinkSubnetId
     linkedResourceId: mysql.outputs.sqlServerId
-    serviceName: serviceName
-    privateDnsZoneId: aksPrivateDnsZone.outputs.dnsZoneId
+    serviceName: 'mysqlServer'
+    privateDnsZoneId: mySqlPrivateDnsZone.outputs.dnsZoneId
     virtualNetworkName: virtualNetworkName
   }
   dependsOn: [
@@ -211,4 +213,42 @@ module applicationGateway './modules/Applicationgateway.bicep' = {
     aksResourceGroup
   ]
 }
+
+module keyVaultPrivateDnsZone './modules/privatednszone.bicep' = {
+  name: 'KeyVaultPrivateDnsZone'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    dnsZoneName: keyVaultDnsZoneName
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkId: aksVirtualnetwork.outputs.vnetId
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
+
+module keyVaultPrivateEndpoint './modules/privateendpoint.bicep' = {
+  name: 'keyVaultPrivateEndpoint'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    privateEndpointName: 'pe-kv-${workloadName}-${locationalias}'
+    subnetPrivateEndpointId: aksVirtualnetwork.outputs.privateLinkSubnetId
+    linkedResourceId: keyVault.outputs.keyVaultId
+    serviceName: 'vault'
+    privateDnsZoneId: keyVaultPrivateDnsZone.outputs.dnsZoneId
+    virtualNetworkName: virtualNetworkName
+  }
+}
+
+
+module keyVault './modules/keyvault.bicep' = {
+  name: 'keyVault'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    keyVaultName: keyVaultName
+    location: location
+  }
+}
+
 
