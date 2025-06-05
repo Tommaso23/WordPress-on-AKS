@@ -168,6 +168,9 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2025-02-01' 
     ingressProfile: {
       webAppRouting: {
         enabled: true
+        nginx: {
+          defaultIngressControllerType: 'None'
+        }
       }
     }
     metricsProfile: {
@@ -186,3 +189,4 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2025-02-01' 
 }
 
 output aksClusterPrincipalId string = managedCluster.identity.principalId
+
