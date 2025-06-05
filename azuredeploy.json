@@ -1,0 +1,1426 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.36.1.42791",
+      "templateHash": "9903082917423607658"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[deployment().location]"
+    },
+    "workloadName": {
+      "type": "string"
+    },
+    "locationalias": {
+      "type": "string"
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": "[format('rg-aks-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "defaultValue": "[format('vnet-aks-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+    },
+    "vnetAddrPrefix": {
+      "type": "string",
+      "defaultValue": "10.100.0.0/24"
+    },
+    "aksSubnetName": {
+      "type": "string",
+      "defaultValue": "snet-clusternodes-aks"
+    },
+    "aksSubnetAddrPrefix": {
+      "type": "string",
+      "defaultValue": "10.100.0.0/26"
+    },
+    "appgatewaySubnetName": {
+      "type": "string",
+      "defaultValue": "snet-agw-aks"
+    },
+    "appgatewaySubnetAddrPrefix": {
+      "type": "string",
+      "defaultValue": "10.100.0.64/26"
+    },
+    "privateLinkSubnetName": {
+      "type": "string",
+      "defaultValue": "snet-pep-aks"
+    },
+    "privateLinkSubnetAddrPrefix": {
+      "type": "string",
+      "defaultValue": "10.100.0.128/28"
+    },
+    "netappSubnetName": {
+      "type": "string",
+      "defaultValue": "snet-netapp-aks"
+    },
+    "netappSubnetAddrPrefix": {
+      "type": "string",
+      "defaultValue": "10.100.0.144/28"
+    },
+    "mysqlPrivateEndpointName": {
+      "type": "string",
+      "defaultValue": "[format('pe-mysql-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+    },
+    "sqlServerName": {
+      "type": "string",
+      "defaultValue": "[format('sql-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+    },
+    "sqlAdministratorLogin": {
+      "type": "string"
+    },
+    "sqlAdministratorLoginPassword": {
+      "type": "securestring"
+    },
+    "databaseName": {
+      "type": "string",
+      "defaultValue": "[format('db-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+    },
+    "sqlVersion": {
+      "type": "string",
+      "defaultValue": "8.0.21"
+    },
+    "sqlServerSKU": {
+      "type": "string",
+      "defaultValue": "Standard_B1ms"
+    },
+    "kubernetesVersion": {
+      "type": "string",
+      "defaultValue": "1.31.7"
+    },
+    "agentPoolSize": {
+      "type": "string",
+      "defaultValue": "Standard_D4as_v5"
+    },
+    "userPoolSize": {
+      "type": "string",
+      "defaultValue": "Standard_D4as_v5"
+    },
+    "clusterAuthorizedIPRanges": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "netappAccountName": {
+      "type": "string",
+      "defaultValue": "[format('netapp-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+    },
+    "capacityPoolName": {
+      "type": "string",
+      "defaultValue": "[format('pool-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+    },
+    "volumeName": {
+      "type": "string",
+      "defaultValue": "[format('vol-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+    },
+    "serviceLevel": {
+      "type": "string",
+      "defaultValue": "Premium"
+    },
+    "numberOfTB": {
+      "type": "int",
+      "defaultValue": 1
+    },
+    "qosType": {
+      "type": "string",
+      "defaultValue": "Auto"
+    },
+    "numberOf50GB": {
+      "type": "int",
+      "defaultValue": 1
+    },
+    "applicationGatewayPublicIpAddressName": {
+      "type": "string",
+      "defaultValue": "[format('agw-pip-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+    },
+    "applicationGatewayName": {
+      "type": "string",
+      "defaultValue": "[format('agw-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+    },
+    "internalLoadBalancerIp": {
+      "type": "string",
+      "defaultValue": "10.100.0.62"
+    }
+  },
+  "variables": {
+    "mySqlDnsZoneName": "privatelink.mysql.database.azure.com",
+    "subnets": [
+      {
+        "subnetAddrPrefix": "[parameters('aksSubnetAddrPrefix')]",
+        "subnetName": "[parameters('aksSubnetName')]",
+        "vnetName": "[parameters('virtualNetworkName')]",
+        "nsgId": "",
+        "routeTableId": "",
+        "delegation": ""
+      },
+      {
+        "subnetAddrPrefix": "[parameters('appgatewaySubnetAddrPrefix')]",
+        "subnetName": "[parameters('appgatewaySubnetName')]",
+        "vnetName": "[parameters('virtualNetworkName')]",
+        "nsgId": "",
+        "routeTableId": "",
+        "delegation": ""
+      },
+      {
+        "subnetAddrPrefix": "[parameters('privateLinkSubnetAddrPrefix')]",
+        "subnetName": "[parameters('privateLinkSubnetName')]",
+        "vnetName": "[parameters('virtualNetworkName')]",
+        "nsgId": "",
+        "routeTableId": "",
+        "delegation": ""
+      },
+      {
+        "subnetAddrPrefix": "[parameters('netappSubnetAddrPrefix')]",
+        "subnetName": "[parameters('netappSubnetName')]",
+        "vnetName": "[parameters('virtualNetworkName')]",
+        "nsgId": "",
+        "routeTableId": "",
+        "delegation": "Microsoft.NetApp/volumes"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "aksResourceGroup",
+      "location": "[deployment().location]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "rgName": {
+            "value": "[parameters('resourceGroupName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "8510514467171941033"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "rgName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/resourceGroups",
+              "apiVersion": "2025-03-01",
+              "name": "[parameters('rgName')]",
+              "location": "[parameters('location')]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "aksVirtualnetwork",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "vnetName": {
+            "value": "[parameters('virtualNetworkName')]"
+          },
+          "vnetAddrPrefix": {
+            "value": "[parameters('vnetAddrPrefix')]"
+          },
+          "subnets": {
+            "value": "[variables('subnets')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "4076115468029314281"
+            }
+          },
+          "parameters": {
+            "vnetName": {
+              "type": "string"
+            },
+            "vnetAddrPrefix": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "subnets": {
+              "type": "array"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('vnetName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "copy": [
+                  {
+                    "name": "subnets",
+                    "count": "[length(parameters('subnets'))]",
+                    "input": {
+                      "name": "[parameters('subnets')[copyIndex('subnets')].subnetName]",
+                      "properties": {
+                        "addressPrefix": "[parameters('subnets')[copyIndex('subnets')].subnetAddrPrefix]",
+                        "networkSecurityGroup": "[if(equals(parameters('subnets')[copyIndex('subnets')].nsgId, ''), null(), createObject('id', parameters('subnets')[copyIndex('subnets')].nsgId))]",
+                        "routeTable": "[if(equals(parameters('subnets')[copyIndex('subnets')].routeTableId, ''), null(), createObject('id', parameters('subnets')[copyIndex('subnets')].routeTableId))]",
+                        "delegations": "[if(equals(parameters('subnets')[copyIndex('subnets')].delegation, ''), createArray(), createArray(createObject('name', format('{0}-delegation', parameters('subnets')[copyIndex('subnets')].subnetName), 'properties', createObject('serviceName', parameters('subnets')[copyIndex('subnets')].delegation))))]"
+                      }
+                    }
+                  }
+                ],
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('vnetAddrPrefix')]"
+                  ]
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "vnetId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+            },
+            "subnets": {
+              "type": "array",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '2024-05-01').subnets]"
+            },
+            "aksSubnetId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '2024-05-01').subnets[0].id]"
+            },
+            "appGatewaySubnetId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '2024-05-01').subnets[1].id]"
+            },
+            "privateLinkSubnetId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '2024-05-01').subnets[2].id]"
+            },
+            "netappSubnetId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '2024-05-01').subnets[3].id]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "mysql",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "sqlServerName": {
+            "value": "[parameters('sqlServerName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "sqlAdministratorLogin": {
+            "value": "[parameters('sqlAdministratorLogin')]"
+          },
+          "sqlAdministratorLoginPassword": {
+            "value": "[parameters('sqlAdministratorLoginPassword')]"
+          },
+          "sqlVersion": {
+            "value": "[parameters('sqlVersion')]"
+          },
+          "databaseName": {
+            "value": "[parameters('databaseName')]"
+          },
+          "sqlServerSKU": {
+            "value": "[parameters('sqlServerSKU')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "5926071728549138481"
+            }
+          },
+          "parameters": {
+            "sqlServerName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "sqlAdministratorLogin": {
+              "type": "string"
+            },
+            "sqlAdministratorLoginPassword": {
+              "type": "securestring"
+            },
+            "databaseName": {
+              "type": "string"
+            },
+            "sqlVersion": {
+              "type": "string"
+            },
+            "sqlServerSKU": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DBforMySQL/flexibleServers",
+              "apiVersion": "2023-12-30",
+              "name": "[parameters('sqlServerName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "administratorLogin": "[parameters('sqlAdministratorLogin')]",
+                "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+                "version": "[parameters('sqlVersion')]",
+                "network": {
+                  "publicNetworkAccess": "Disabled"
+                },
+                "storage": {
+                  "storageSizeGB": 20,
+                  "iops": 360
+                }
+              },
+              "sku": {
+                "name": "[parameters('sqlServerSKU')]",
+                "tier": "Burstable"
+              }
+            },
+            {
+              "type": "Microsoft.DBforMySQL/flexibleServers/databases",
+              "apiVersion": "2023-12-30",
+              "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('databaseName'))]",
+              "properties": {
+                "collation": "utf8mb3_general_ci"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DBforMySQL/flexibleServers/firewallRules",
+              "apiVersion": "2023-12-30",
+              "name": "[format('{0}/{1}', parameters('sqlServerName'), 'AllowAzureIPs')]",
+              "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/flexibleServers/databases', parameters('sqlServerName'), parameters('databaseName'))]",
+                "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DBforMySQL/flexibleServers/configurations",
+              "apiVersion": "2023-06-30",
+              "name": "[format('{0}/{1}', parameters('sqlServerName'), 'require_secure_transport')]",
+              "properties": {
+                "value": "OFF",
+                "source": "user-override"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "sqlServerId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "mySqlPrivateDnsZone",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[variables('mySqlDnsZoneName')]"
+          },
+          "virtualNetworkName": {
+            "value": "[parameters('virtualNetworkName')]"
+          },
+          "virtualNetworkId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork'), '2022-09-01').outputs.vnetId.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "3047665738206839646"
+            }
+          },
+          "parameters": {
+            "dnsZoneName": {
+              "type": "string"
+            },
+            "virtualNetworkName": {
+              "type": "string"
+            },
+            "virtualNetworkId": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "[parameters('dnsZoneName')]",
+              "location": "global",
+              "properties": {}
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', parameters('dnsZoneName'), format('vlink-{0}', parameters('virtualNetworkName')))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('virtualNetworkId')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('dnsZoneName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "dnsZoneId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/privateDnsZones', parameters('dnsZoneName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "mySQLPrivateEndpoint",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "privateEndpointName": {
+            "value": "[parameters('mysqlPrivateEndpointName')]"
+          },
+          "subnetPrivateEndpointId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork'), '2022-09-01').outputs.privateLinkSubnetId.value]"
+          },
+          "linkedResourceId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'mysql'), '2022-09-01').outputs.sqlServerId.value]"
+          },
+          "serviceName": {
+            "value": "mysqlServer"
+          },
+          "privateDnsZoneId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'mySqlPrivateDnsZone'), '2022-09-01').outputs.dnsZoneId.value]"
+          },
+          "virtualNetworkName": {
+            "value": "[parameters('virtualNetworkName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "5965447070968227322"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "privateEndpointName": {
+              "type": "string"
+            },
+            "subnetPrivateEndpointId": {
+              "type": "string"
+            },
+            "linkedResourceId": {
+              "type": "string"
+            },
+            "serviceName": {
+              "type": "string"
+            },
+            "privateDnsZoneId": {
+              "type": "string"
+            },
+            "virtualNetworkName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('privateEndpointName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('subnetPrivateEndpointId')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('privateEndpointName')]",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('linkedResourceId')]",
+                      "groupIds": [
+                        "[parameters('serviceName')]"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2024-05-01",
+              "name": "[format('{0}/{1}', parameters('privateEndpointName'), 'default')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "[format('privatelink.{0}.azure.com', parameters('serviceName'))]",
+                    "properties": {
+                      "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpointName'))]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'mySqlPrivateDnsZone')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'mysql')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "aksCluster",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "clusterName": {
+            "value": "[format('aks-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "kubernetesVersion": {
+            "value": "[parameters('kubernetesVersion')]"
+          },
+          "agentPoolSize": {
+            "value": "[parameters('agentPoolSize')]"
+          },
+          "userPoolSize": {
+            "value": "[parameters('userPoolSize')]"
+          },
+          "subnetId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork'), '2022-09-01').outputs.aksSubnetId.value]"
+          },
+          "clusterAuthorizedIPRanges": {
+            "value": "[parameters('clusterAuthorizedIPRanges')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "5094281060974866243"
+            }
+          },
+          "parameters": {
+            "clusterName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "kubernetesVersion": {
+              "type": "string"
+            },
+            "agentPoolSize": {
+              "type": "string"
+            },
+            "subnetId": {
+              "type": "string"
+            },
+            "userPoolSize": {
+              "type": "string"
+            },
+            "clusterAuthorizedIPRanges": {
+              "type": "array"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ContainerService/managedClusters",
+              "apiVersion": "2025-02-01",
+              "name": "[parameters('clusterName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "kubernetesVersion": "[parameters('kubernetesVersion')]",
+                "dnsPrefix": "[format('{0}-dns', parameters('clusterName'))]",
+                "agentPoolProfiles": [
+                  {
+                    "name": "agentpool",
+                    "count": 2,
+                    "vmSize": "[parameters('agentPoolSize')]",
+                    "osDiskSizeGB": 80,
+                    "osDiskType": "Managed",
+                    "osType": "Linux",
+                    "osSKU": "Ubuntu",
+                    "minCount": 2,
+                    "maxCount": 4,
+                    "kubeletDiskType": "OS",
+                    "vnetSubnetID": "[parameters('subnetId')]",
+                    "enableAutoScaling": true,
+                    "enableFIPS": false,
+                    "enableEncryptionAtHost": false,
+                    "type": "VirtualMachineScaleSets",
+                    "mode": "System",
+                    "scaleSetPriority": "Regular",
+                    "scaleSetEvictionPolicy": "Delete",
+                    "orchestratorVersion": "[parameters('kubernetesVersion')]",
+                    "enableNodePublicIP": false,
+                    "maxPods": 50,
+                    "availabilityZones": [
+                      "1",
+                      "2",
+                      "3"
+                    ],
+                    "upgradeSettings": {
+                      "maxSurge": "33%"
+                    },
+                    "nodeTaints": [
+                      "CriticalAddonsOnly=true:NoSchedule"
+                    ]
+                  },
+                  {
+                    "name": "userpool",
+                    "count": 2,
+                    "vmSize": "[parameters('userPoolSize')]",
+                    "osDiskSizeGB": 128,
+                    "osDiskType": "Managed",
+                    "osType": "Linux",
+                    "osSKU": "Ubuntu",
+                    "kubeletDiskType": "OS",
+                    "minCount": 2,
+                    "maxCount": 4,
+                    "vnetSubnetID": "[parameters('subnetId')]",
+                    "enableAutoScaling": true,
+                    "enableFIPS": false,
+                    "enableEncryptionAtHost": false,
+                    "type": "VirtualMachineScaleSets",
+                    "mode": "User",
+                    "scaleSetPriority": "Regular",
+                    "scaleSetEvictionPolicy": "Delete",
+                    "orchestratorVersion": "[parameters('kubernetesVersion')]",
+                    "enableNodePublicIP": false,
+                    "maxPods": 30,
+                    "availabilityZones": [
+                      "1",
+                      "2",
+                      "3"
+                    ],
+                    "upgradeSettings": {
+                      "maxSurge": "33%"
+                    }
+                  }
+                ],
+                "servicePrincipalProfile": {
+                  "clientId": "msi"
+                },
+                "addonProfiles": {
+                  "azureKeyvaultSecretsProvider": {
+                    "enabled": false
+                  },
+                  "azurepolicy": {
+                    "enabled": true
+                  }
+                },
+                "nodeResourceGroup": "[format('MC_rg-aks-test-itn_{0}_italynorth', parameters('clusterName'))]",
+                "enableRBAC": true,
+                "enablePodSecurityPolicy": false,
+                "networkProfile": {
+                  "networkPlugin": "azure",
+                  "networkPluginMode": "overlay",
+                  "podCidr": "192.168.0.0/16",
+                  "networkPolicy": "none",
+                  "loadBalancerSku": "Standard",
+                  "loadBalancerProfile": null,
+                  "serviceCidr": "172.16.0.0/16",
+                  "dnsServiceIP": "172.16.0.10",
+                  "outboundType": "loadBalancer"
+                },
+                "autoScalerProfile": {
+                  "balance-similar-node-groups": "false",
+                  "expander": "random",
+                  "max-empty-bulk-delete": "10",
+                  "max-graceful-termination-sec": "600",
+                  "max-node-provision-time": "15m",
+                  "max-total-unready-percentage": "45",
+                  "new-pod-scale-up-delay": "0s",
+                  "ok-total-unready-count": "3",
+                  "scale-down-delay-after-add": "10m",
+                  "scale-down-delay-after-delete": "10s",
+                  "scale-down-delay-after-failure": "3m",
+                  "scale-down-unneeded-time": "10m",
+                  "scale-down-unready-time": "20m",
+                  "scale-down-utilization-threshold": "0.5",
+                  "scan-interval": "10s",
+                  "skip-nodes-with-local-storage": "false",
+                  "skip-nodes-with-system-pods": "true"
+                },
+                "apiServerAccessProfile": {
+                  "authorizedIPRanges": "[parameters('clusterAuthorizedIPRanges')]",
+                  "enablePrivateCluster": false
+                },
+                "autoUpgradeProfile": {
+                  "upgradeChannel": "patch",
+                  "nodeOSUpgradeChannel": "NodeImage"
+                },
+                "azureMonitorProfile": {
+                  "metrics": {
+                    "enabled": true,
+                    "kubeStateMetrics": {}
+                  }
+                },
+                "storageProfile": {
+                  "blobCSIDriver": {
+                    "enabled": false
+                  },
+                  "diskCSIDriver": {
+                    "enabled": false
+                  },
+                  "fileCSIDriver": {
+                    "enabled": false
+                  },
+                  "snapshotController": {
+                    "enabled": false
+                  }
+                },
+                "disableLocalAccounts": false,
+                "securityProfile": {
+                  "workloadIdentity": {
+                    "enabled": true
+                  },
+                  "imageCleaner": {
+                    "enabled": true,
+                    "intervalHours": 168
+                  }
+                },
+                "oidcIssuerProfile": {
+                  "enabled": true
+                },
+                "ingressProfile": {
+                  "webAppRouting": {
+                    "enabled": true,
+                    "nginx": {
+                      "defaultIngressControllerType": "None"
+                    }
+                  }
+                },
+                "metricsProfile": {
+                  "costAnalysis": {
+                    "enabled": false
+                  }
+                }
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "sku": {
+                "name": "Base",
+                "tier": "Standard"
+              }
+            }
+          ],
+          "outputs": {
+            "aksClusterPrincipalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2025-02-01', 'full').identity.principalId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "netapp",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "netappAccountName": {
+            "value": "[parameters('netappAccountName')]"
+          },
+          "capacityPoolName": {
+            "value": "[parameters('capacityPoolName')]"
+          },
+          "volumeName": {
+            "value": "[parameters('volumeName')]"
+          },
+          "serviceLevel": {
+            "value": "[parameters('serviceLevel')]"
+          },
+          "numberOfTB": {
+            "value": "[parameters('numberOfTB')]"
+          },
+          "qosType": {
+            "value": "[parameters('qosType')]"
+          },
+          "numberOf50GB": {
+            "value": "[parameters('numberOf50GB')]"
+          },
+          "netappSubnetId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork'), '2022-09-01').outputs.netappSubnetId.value]"
+          },
+          "aksSubnetAddrPrefix": {
+            "value": "[parameters('aksSubnetAddrPrefix')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "1672994356497726903"
+            }
+          },
+          "parameters": {
+            "netappAccountName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "capacityPoolName": {
+              "type": "string"
+            },
+            "serviceLevel": {
+              "type": "string"
+            },
+            "numberOfTB": {
+              "type": "int"
+            },
+            "qosType": {
+              "type": "string"
+            },
+            "volumeName": {
+              "type": "string"
+            },
+            "netappSubnetId": {
+              "type": "string"
+            },
+            "numberOf50GB": {
+              "type": "int"
+            },
+            "aksSubnetAddrPrefix": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "capacityPoolSize": "[mul(json('1099511627776'), parameters('numberOfTB'))]",
+            "volumeSize": "[mul(json('53687091200'), parameters('numberOf50GB'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.NetApp/netAppAccounts",
+              "apiVersion": "2025-01-01",
+              "name": "[parameters('netappAccountName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "encryption": {
+                  "keySource": "Microsoft.NetApp"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.NetApp/netAppAccounts/capacityPools",
+              "apiVersion": "2025-01-01",
+              "name": "[format('{0}/{1}', parameters('netappAccountName'), parameters('capacityPoolName'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "serviceLevel": "[parameters('serviceLevel')]",
+                "size": "[variables('capacityPoolSize')]",
+                "qosType": "[parameters('qosType')]",
+                "encryptionType": "Single",
+                "coolAccess": false
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.NetApp/netAppAccounts', parameters('netappAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+              "apiVersion": "2025-01-01",
+              "name": "[format('{0}/{1}/{2}', parameters('netappAccountName'), parameters('capacityPoolName'), parameters('volumeName'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "serviceLevel": "[parameters('serviceLevel')]",
+                "creationToken": "[parameters('volumeName')]",
+                "usageThreshold": "[variables('volumeSize')]",
+                "exportPolicy": {
+                  "rules": [
+                    {
+                      "ruleIndex": 1,
+                      "unixReadOnly": false,
+                      "unixReadWrite": true,
+                      "cifs": false,
+                      "nfsv3": true,
+                      "nfsv41": false,
+                      "allowedClients": "[parameters('aksSubnetAddrPrefix')]",
+                      "kerberos5ReadOnly": false,
+                      "kerberos5ReadWrite": false,
+                      "kerberos5iReadOnly": false,
+                      "kerberos5iReadWrite": false,
+                      "kerberos5pReadOnly": false,
+                      "kerberos5pReadWrite": false,
+                      "hasRootAccess": true,
+                      "chownMode": "Unrestricted"
+                    }
+                  ]
+                },
+                "protocolTypes": [
+                  "NFSv3"
+                ],
+                "subnetId": "[parameters('netappSubnetId')]",
+                "networkFeatures": "Standard",
+                "snapshotDirectoryVisible": true,
+                "kerberosEnabled": false,
+                "securityStyle": "Unix",
+                "smbEncryption": false,
+                "smbContinuouslyAvailable": false,
+                "encryptionKeySource": "Microsoft.NetApp",
+                "ldapEnabled": false,
+                "unixPermissions": "0775",
+                "coolAccess": false,
+                "avsDataStore": "Disabled",
+                "isDefaultQuotaEnabled": false,
+                "defaultUserQuotaInKiBs": 0,
+                "defaultGroupQuotaInKiBs": 0,
+                "enableSubvolumes": "Disabled",
+                "smbNonBrowsable": "Disabled",
+                "smbAccessBasedEnumeration": "Disabled",
+                "deleteBaseSnapshot": false,
+                "isLargeVolume": false
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', parameters('netappAccountName'), parameters('capacityPoolName'))]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "appGatewayPublicIpAddress",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "publicIpAddressName": {
+            "value": "[parameters('applicationGatewayPublicIpAddressName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "12675429179594246047"
+            }
+          },
+          "parameters": {
+            "publicIpAddressName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('publicIpAddressName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "publicIPAllocationMethod": "Static"
+              },
+              "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+              },
+              "zones": [
+                "1",
+                "2",
+                "3"
+              ]
+            }
+          ],
+          "outputs": {
+            "publicIpAddressId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]"
+            },
+            "publicIpAddress": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName')), '2024-05-01').ipAddress]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "applicationGateway",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "applicationGatewayName": {
+            "value": "[parameters('applicationGatewayName')]"
+          },
+          "applicationGatewaySubnetId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork'), '2022-09-01').outputs.appGatewaySubnetId.value]"
+          },
+          "appGatewayPublicIpAddressId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'appGatewayPublicIpAddress'), '2022-09-01').outputs.publicIpAddressId.value]"
+          },
+          "internalLoadBalancerIp": {
+            "value": "[parameters('internalLoadBalancerIp')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "16548075621062426281"
+            }
+          },
+          "parameters": {
+            "applicationGatewayName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "applicationGatewaySubnetId": {
+              "type": "string"
+            },
+            "appGatewayPublicIpAddressId": {
+              "type": "string"
+            },
+            "internalLoadBalancerIp": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/applicationGateways",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('applicationGatewayName')]",
+              "location": "[parameters('location')]",
+              "zones": [
+                "1",
+                "2",
+                "3"
+              ],
+              "properties": {
+                "sku": {
+                  "name": "Standard_v2",
+                  "tier": "Standard_v2",
+                  "family": "Generation_1"
+                },
+                "gatewayIPConfigurations": [
+                  {
+                    "name": "appGatewayIpConfig",
+                    "properties": {
+                      "subnet": {
+                        "id": "[parameters('applicationGatewaySubnetId')]"
+                      }
+                    }
+                  }
+                ],
+                "frontendIPConfigurations": [
+                  {
+                    "name": "appGwPublicFrontendIpIPv4",
+                    "properties": {
+                      "publicIPAddress": {
+                        "id": "[parameters('appGatewayPublicIpAddressId')]"
+                      }
+                    }
+                  }
+                ],
+                "frontendPorts": [
+                  {
+                    "name": "port_80",
+                    "properties": {
+                      "port": 80
+                    }
+                  }
+                ],
+                "autoscaleConfiguration": {
+                  "minCapacity": 0,
+                  "maxCapacity": 10
+                },
+                "enableHttp2": true,
+                "backendAddressPools": [
+                  {
+                    "name": "be-loadBalancerIp",
+                    "properties": {
+                      "backendAddresses": [
+                        {
+                          "ipAddress": "[parameters('internalLoadBalancerIp')]"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "backendHttpSettingsCollection": [
+                  {
+                    "name": "aks-ingress-bpool-http",
+                    "properties": {
+                      "port": 80,
+                      "protocol": "Http",
+                      "cookieBasedAffinity": "Disabled",
+                      "pickHostNameFromBackendAddress": false,
+                      "requestTimeout": 20
+                    }
+                  }
+                ],
+                "httpListeners": [
+                  {
+                    "name": "listener-http",
+                    "properties": {
+                      "frontendIPConfiguration": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('applicationGatewayName'), 'appGwPublicFrontendIpIPv4')]"
+                      },
+                      "frontendPort": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', parameters('applicationGatewayName'), 'port_80')]"
+                      },
+                      "protocol": "Http",
+                      "requireServerNameIndication": false
+                    }
+                  }
+                ],
+                "listeners": [],
+                "urlPathMaps": [],
+                "requestRoutingRules": [
+                  {
+                    "name": "apw-routing-rule",
+                    "properties": {
+                      "ruleType": "Basic",
+                      "priority": 100,
+                      "httpListener": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', parameters('applicationGatewayName'), 'listener-http')]"
+                      },
+                      "backendAddressPool": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('applicationGatewayName'), 'be-loadBalancerIp')]"
+                      },
+                      "backendHttpSettings": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parameters('applicationGatewayName'), 'aks-ingress-bpool-http')]"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'appGatewayPublicIpAddress')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "aksClusterNetworkContributorRoleAssignment",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksCluster'), '2022-09-01').outputs.aksClusterPrincipalId.value]"
+          },
+          "roleDefinitionId": {
+            "value": "4d97b98b-1d4f-4787-a291-c67834d212e7"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "4417456753614125144"
+            }
+          },
+          "parameters": {
+            "roleDefinitionId": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "roleAssignmentName": "[guid(parameters('roleDefinitionId'), parameters('principalId'), resourceGroup().id)]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[variables('roleAssignmentName')]",
+              "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+                "principalId": "[parameters('principalId')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksCluster')]",
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]"
+      ]
+    }
+  ]
+}
