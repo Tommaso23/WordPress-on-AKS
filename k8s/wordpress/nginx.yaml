@@ -4,7 +4,7 @@ metadata:
   name: wordpress
   namespace: wordpress
 spec:
-  ingressClassName: webapprouting.kubernetes.azure.com
+  ingressClassName: nginx-internal
   rules:
   - http:
       paths:

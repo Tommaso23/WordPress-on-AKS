@@ -24,11 +24,11 @@ spec:
           mountPath: /bitnami/wordpress
         resources:
           requests:
-            memory: "512Mi"
-            cpu: "1m"
+            memory: "256Mi"
+            cpu: "100m"
           limits:
             memory: "512Mi"
-            cpu: "1m"
+            cpu: "500m"
         env:
         - name: WORDPRESS_DATABASE_HOST
           value: "sql-bcp-itn.mysql.database.azure.com"

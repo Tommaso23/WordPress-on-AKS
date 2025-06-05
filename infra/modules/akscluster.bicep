@@ -166,7 +166,7 @@ resource managedClusters_aks_test_itn_001_name_resource 'Microsoft.ContainerServ
     }
     ingressProfile: {
       webAppRouting: {
-        enabled: false
+        enabled: true
       }
     }
     metricsProfile: {

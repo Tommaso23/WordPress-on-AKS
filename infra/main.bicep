@@ -3,9 +3,9 @@ param location string = deployment().location
 
 param workloadName string
 param locationalias string
-param resourceGroupName string = 'rg-aks-${workloadName}-test-${locationalias}'
+param resourceGroupName string = 'rg-aks-${workloadName}-${locationalias}'
 
-param virtualNetworkName string = 'vnet-aks-${workloadName}-test-${locationalias}'
+param virtualNetworkName string = 'vnet-aks-${workloadName}-${locationalias}'
 param vnetAddrPrefix string = '10.100.0.0/24'
 
 param aksSubnetName string = 'snet-clusternodes-aks'
@@ -44,7 +44,7 @@ param qosType string = 'Auto'
 param numberOf50GB int = 1
 
 param keyVaultPrivateEndpointName string = 'pe-kv-${workloadName}-${locationalias}'
-var keyVaultDnsZoneName string = 'privatelink.vaultcore.azure.net'
+var keyVaultDnsZoneName = 'privatelink.vaultcore.azure.net'
 param keyVaultName string = 'kv-${workloadName}-${locationalias}'
 
 param applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationalias}'
@@ -254,6 +254,10 @@ module keyVault './modules/keyvault.bicep' = {
     keyVaultName: keyVaultName
     location: location
   }
+  dependsOn: [
+    aksResourceGroup
+    keyVaultPrivateDnsZone
+  ]
 }
 
 
