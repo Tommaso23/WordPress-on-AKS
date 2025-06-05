@@ -49,6 +49,14 @@ resource firewallRules 'Microsoft.DBforMySQL/flexibleServers/firewallRules@2023-
   }
 }
 
+resource requireSecureTransportParam 'Microsoft.DBforMySQL/flexibleServers/configurations@2023-06-30' = {
+  name: 'require_secure_transport'
+  parent: sqlServer
+  properties: {
+    value: 'OFF'
+    source: 'user-override'
+  }
+}
 
 output sqlServerId string = sqlServer.id
 
