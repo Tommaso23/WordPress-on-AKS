@@ -1,0 +1,28 @@
+name: bicep-compile
+
+on: push
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Compile bicep
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az bicep upgrade
+            az bicep build --file infra/main.bicep --outfile azuredeploy.json
+            az bicep build --file infra/parameters/parameters.bicepparam --outfile azureparameters.json
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: Auto-compile bicep
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+          add: 'azuredeploy.json'
