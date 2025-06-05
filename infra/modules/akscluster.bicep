@@ -84,7 +84,8 @@ resource managedClusters_aks_test_itn_001_name_resource 'Microsoft.ContainerServ
     }
     addonProfiles: {
       azureKeyvaultSecretsProvider: {
-        enabled: false
+        //TODO: Check if this is needed
+        enabled: true
       }
       azurepolicy: {
         enabled: true

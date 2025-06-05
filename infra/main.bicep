@@ -260,4 +260,18 @@ module keyVault './modules/keyvault.bicep' = {
   ]
 }
 
+//TODO: add RBAC permission Network Contributor to the AKS Cluster Managed Identity for creation of ILB
+module aksClusterNetworkContributorRoleAssignment './modules/roleassignment.bicep' = {
+  name: 'aksClusterNetworkContributorRoleAssignment'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    principalId: aksCluster.outputs.aksClusterIdentityPrincipalId
+    roleDefinitionName: 'Network Contributor'
+    scope: aksVirtualnetwork.outputs.vnetId
+  }
+  dependsOn: [
+    aksCluster
+  ]
+}
+
 
