@@ -199,7 +199,7 @@ module appGatewayPublicIpAddress './modules/publicipaddress.bicep' = {
   ]
 }
 
-module applicationGateway './modules/Applicationgateway.bicep' = {
+module applicationGateway './modules/applicationgateway.bicep' = {
   name: 'applicationGateway'
   scope: resourceGroup(resourceGroupName)
   params: {
