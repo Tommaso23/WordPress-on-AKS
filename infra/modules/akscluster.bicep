@@ -6,7 +6,7 @@ param subnetId string
 param userPoolSize string
 param clusterAuthorizedIPRanges array
 
-resource managedClusters_aks_test_itn_001_name_resource 'Microsoft.ContainerService/managedClusters@2025-02-01' = {
+resource managedCluster 'Microsoft.ContainerService/managedClusters@2025-02-01' = {
   name: clusterName
   location: location
   properties: {
@@ -185,4 +185,4 @@ resource managedClusters_aks_test_itn_001_name_resource 'Microsoft.ContainerServ
   }
 }
 
-
+output aksClusterPrincipalId string = managedCluster.identity.principalId
