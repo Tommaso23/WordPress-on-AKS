@@ -2,10 +2,10 @@ targetScope = 'subscription'
 param location string = deployment().location
 
 param workloadName string
-param locationalias string
-param resourceGroupName string = 'rg-aks-${workloadName}-${locationalias}'
+param locationAlias string
+param resourceGroupName string = 'rg-aks-${workloadName}-${locationAlias}'
 
-param virtualNetworkName string = 'vnet-aks-${workloadName}-${locationalias}'
+param virtualNetworkName string = 'vnet-aks-${workloadName}-${locationAlias}'
 param vnetAddrPrefix string = '10.100.0.0/24'
 
 param aksSubnetName string = 'snet-clusternodes-aks'
@@ -17,35 +17,36 @@ param privateLinkSubnetAddrPrefix string = '10.100.0.128/28'
 param netappSubnetName string = 'snet-netapp-aks'
 param netappSubnetAddrPrefix string = '10.100.0.144/28'
 
-param mysqlPrivateEndpointName string = 'pe-mysql-${workloadName}-${locationalias}'
+param mysqlPrivateEndpointName string = 'pe-mysql-${workloadName}-${locationAlias}'
 var mySqlDnsZoneName = 'privatelink.mysql.database.azure.com'
 
-param sqlServerName string = 'sql-${workloadName}-${locationalias}'
+param sqlServerName string = 'sql-${workloadName}-${locationAlias}'
 param sqlAdministratorLogin string
 @secure()
 param sqlAdministratorLoginPassword string
-param databaseName string = 'db-${workloadName}-${locationalias}'
+param databaseName string = 'db-${workloadName}-${locationAlias}'
 param sqlVersion string = '8.0.21'
 param sqlServerSKU string = 'Standard_B1ms'
 
 // AKS Cluster //
+param aksClusterName string = 'aks-${workloadName}-${locationAlias}'
 param kubernetesVersion string = '1.31.7'
 param agentPoolSize string = 'Standard_D4as_v5'
 param userPoolSize string = 'Standard_D4as_v5'
 param clusterAuthorizedIPRanges array = []
 
 // NETAPP Files //
-param netappAccountName string = 'netapp-${workloadName}-${locationalias}'
-param capacityPoolName string = 'pool-${workloadName}-${locationalias}'
-param volumeName string = 'vol-${workloadName}-${locationalias}'
+param netappAccountName string = 'netapp-${workloadName}-${locationAlias}'
+param capacityPoolName string = 'pool-${workloadName}-${locationAlias}'
+param volumeName string = 'vol-${workloadName}-${locationAlias}'
 param serviceLevel string = 'Premium'
 param numberOfTB int = 1
 param qosType string = 'Auto'
 param numberOf50GB int = 1
 
 
-param applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationalias}'
-param applicationGatewayName string = 'agw-${workloadName}-${locationalias}'
+param applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationAlias}'
+param applicationGatewayName string = 'agw-${workloadName}-${locationAlias}'
 param internalLoadBalancerIp string = '10.100.0.62'
 var subnets = [
   {
@@ -156,7 +157,7 @@ module aksCluster './modules/akscluster.bicep' = {
   name: 'aksCluster'
   scope: resourceGroup(resourceGroupName)
   params: {
-    clusterName: 'aks-${workloadName}-${locationalias}'
+    clusterName: aksClusterName
     location: location
     kubernetesVersion: kubernetesVersion
     agentPoolSize: agentPoolSize
