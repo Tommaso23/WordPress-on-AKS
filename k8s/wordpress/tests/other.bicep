@@ -1,4 +1,4 @@
-param keyVaultPrivateEndpointName string = 'pe-kv-${workloadName}-${locationalias}'
+/*param keyVaultPrivateEndpointName string = 'pe-kv-${workloadName}-${locationalias}'
 var keyVaultDnsZoneName = 'privatelink.vaultcore.azure.net'
 param keyVaultName string = 'kv-${workloadName}-${locationalias}'
 
@@ -45,3 +45,4 @@ module keyVault '../modules/keyvault.bicep' = {
     keyVaultPrivateDnsZone
   ]
 }
+*/
