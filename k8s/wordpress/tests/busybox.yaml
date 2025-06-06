@@ -3,6 +3,7 @@ kind: Pod
 apiVersion: v1
 metadata:
   name: busybox-secrets-store-inline-user-msi
+  namespace: wordpress
 spec:
   containers:
     - name: busybox
@@ -14,10 +15,16 @@ spec:
       - name: secrets-store01-inline
         mountPath: "/mnt/secrets-store"
         readOnly: true
+      env:
+      - name: WORDPRESS_DATABASE_USER
+        valueFrom:
+          secretKeyRef:
+            name: keyvault-secrets
+            key: mysql-database-user
   volumes:
     - name: secrets-store01-inline
       csi:
         driver: secrets-store.csi.k8s.io
         readOnly: true
         volumeAttributes:
-          secretProviderClass: "azure-kvname-user-msi"
+          secretProviderClass: "keyvault-secret-class"

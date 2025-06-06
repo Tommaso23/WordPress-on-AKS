@@ -59,5 +59,5 @@ resource requireSecureTransportParam 'Microsoft.DBforMySQL/flexibleServers/confi
 }
 
 output sqlServerId string = sqlServer.id
-
+output connectionString string = sqlServer.properties.fullyQualifiedDomainName
 

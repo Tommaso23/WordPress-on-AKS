@@ -22,6 +22,9 @@ spec:
         volumeMounts:
         - name: wordpress-storage
           mountPath: /bitnami/wordpress
+        - name: secrets-store
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
         resources:
           requests:
             memory: "256Mi"
@@ -30,23 +33,35 @@ spec:
             memory: "512Mi"
             cpu: "500m"
         env:
-        - name: WORDPRESS_DATABASE_HOST
-          value: "sql-bcp-itn.mysql.database.azure.com"
         - name: WORDPRESS_DATABASE_USER
           valueFrom:
             secretKeyRef:
-              name: wordpress-secret
-              key: mysql-user
+              name: keyvault-secrets
+              key: mysql-database-user
+        - name: WORDPRESS_DATABASE_HOST
+          valueFrom:
+            secretKeyRef:
+              name: keyvault-secrets
+              key: mysql-database-host
         - name: WORDPRESS_DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: wordpress-secret
-              key: mysql-password
+              name: keyvault-secrets
+              key: mysql-database-password
         - name: ALLOW_EMPTY_PASSWORD
           value: "no"
         - name: WORDPRESS_DATABASE_NAME
-          value: "db-bcp-itn"
+          valueFrom:
+            secretKeyRef:
+              name: keyvault-secrets
+              key: mysql-database-name
       volumes:
       - name: wordpress-storage
         persistentVolumeClaim:
           claimName: pvc-nfs
+      - name: secrets-store
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "keyvault-secret-class"

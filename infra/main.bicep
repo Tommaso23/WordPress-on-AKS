@@ -35,7 +35,7 @@ param agentPoolSize string = 'Standard_D4as_v5'
 param userPoolSize string = 'Standard_D4as_v5'
 param clusterAuthorizedIPRanges array = []
 
-// NETAPP Files //
+// NetApp Files //
 param netappAccountName string = 'netapp-${workloadName}-${locationAlias}'
 param capacityPoolName string = 'pool-${workloadName}-${locationAlias}'
 param volumeName string = 'vol-${workloadName}-${locationAlias}'
@@ -43,6 +43,11 @@ param serviceLevel string = 'Premium'
 param numberOfTB int = 1
 param qosType string = 'Auto'
 param numberOf50GB int = 1
+
+// Key Vault //
+param keyVaultPrivateEndpointName string = 'pe-kv-${workloadName}-${locationAlias}'
+var keyVaultDnsZoneName = 'privatelink.vaultcore.azure.net'
+param keyVaultName string = 'kv-${workloadName}-${uniqueString(subscription().id)}-${locationAlias}'
 
 
 param applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationAlias}'
@@ -224,5 +229,53 @@ module aksClusterNetworkContributorRoleAssignment './modules/rbacassignments.bic
     aksResourceGroup
   ]
 }
+
+module keyVaultPrivateEndpoint './modules/privateendpoint.bicep' = {
+  name: 'keyVaultPrivateEndpoint'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    privateEndpointName: keyVaultPrivateEndpointName
+    subnetPrivateEndpointId: aksVirtualnetwork.outputs.privateLinkSubnetId
+    linkedResourceId: keyVault.outputs.keyVaultId
+    serviceName: 'vault'
+    privateDnsZoneId: keyVaultPrivateDnsZone.outputs.dnsZoneId
+    virtualNetworkName: virtualNetworkName
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
+
+module keyVaultPrivateDnsZone './modules/privatednszone.bicep' = {
+  name: 'KeyVaultPrivateDnsZone'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    dnsZoneName: keyVaultDnsZoneName
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkId: aksVirtualnetwork.outputs.vnetId
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
+
+module keyVault './modules/keyvault.bicep' = {
+  name: 'keyVault'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    keyVaultName: keyVaultName
+    location: location
+    mySqlConnectionString: mysql.outputs.connectionString
+    mySqlUser: sqlAdministratorLogin
+    mySqlPassword: sqlAdministratorLoginPassword
+    mySqlDBName: databaseName
+  }
+  dependsOn: [
+    aksResourceGroup
+    keyVaultPrivateDnsZone
+  ]
+}
+
 
 
