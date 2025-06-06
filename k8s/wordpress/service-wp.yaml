@@ -2,10 +2,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: wordpress
+  namespace: wordpress
   labels:
     app: wordpress
 spec:
-  type: ClusterIP
+  type: ClusterIP  
   ports:
     - port: 80     
       targetPort: 8080
