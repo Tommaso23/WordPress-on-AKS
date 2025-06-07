@@ -84,8 +84,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2025-02-01' 
     }
     addonProfiles: {
       azureKeyvaultSecretsProvider: {
-        //TODO: Check if this is needed
-        enabled: false
+        enabled: true
       }
       azurepolicy: {
         enabled: true

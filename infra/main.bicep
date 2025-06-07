@@ -277,5 +277,5 @@ module keyVault './modules/keyvault.bicep' = {
   ]
 }
 
-
-
+//TODO: existing Managed Identity .... assegna RBAC permission to read secrets from Key Vault "Key Vault Secret User"
+// "id": "/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6",
