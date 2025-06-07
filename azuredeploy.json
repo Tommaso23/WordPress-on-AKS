@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "17698929658965712642"
+      "templateHash": "9173178359603913852"
     }
   },
   "parameters": {
@@ -1242,7 +1242,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "16548075621062426281"
+              "templateHash": "14958700876214414712"
             }
           },
           "parameters": {
@@ -1368,6 +1368,22 @@
                       "backendHttpSettings": {
                         "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parameters('applicationGatewayName'), 'aks-ingress-bpool-http')]"
                       }
+                    }
+                  }
+                ],
+                "probes": [
+                  {
+                    "name": "probe-aks-internal-lb",
+                    "properties": {
+                      "protocol": "Http",
+                      "path": "/healthz",
+                      "host": "10.100.0.62",
+                      "interval": 30,
+                      "timeout": 30,
+                      "unhealthyThreshold": 3,
+                      "pickHostNameFromBackendHttpSettings": false,
+                      "minServers": 0,
+                      "match": {}
                     }
                   }
                 ]
