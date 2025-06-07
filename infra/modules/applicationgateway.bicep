@@ -110,5 +110,21 @@ resource applicationGateways_agw_aks_test_itn_name_resource 'Microsoft.Network/a
         }
       }
     ]
+    probes: [
+      {
+        name: 'probe-aks-internal-lb'
+        properties: {
+          protocol: 'Http'
+          path: '/healthz'
+          host: '10.100.0.62'
+          interval: 30
+          timeout: 30
+          unhealthyThreshold: 3
+          pickHostNameFromBackendHttpSettings: false
+          minServers: 0
+          match: {}
+        }
+      }
+    ]
   }
 }
