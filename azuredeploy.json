@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "9173178359603913852"
+      "templateHash": "6750233491982206755"
     }
   },
   "parameters": {
@@ -732,7 +732,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "5094281060974866243"
+              "templateHash": "15176482206074342650"
             }
           },
           "parameters": {
@@ -839,7 +839,7 @@
                 },
                 "addonProfiles": {
                   "azureKeyvaultSecretsProvider": {
-                    "enabled": false
+                    "enabled": true
                   },
                   "azurepolicy": {
                     "enabled": true
