@@ -16,11 +16,26 @@ spec:
         mountPath: "/mnt/secrets-store"
         readOnly: true
       env:
-      - name: WORDPRESS_DATABASE_USER
-        valueFrom:
-          secretKeyRef:
-            name: keyvault-secrets
-            key: mysql-database-user
+        - name: MYSQL_DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: keyvault-secrets
+              key: mysql-database-user
+        - name: MYSQL_DATABASE_HOST
+          valueFrom:
+            secretKeyRef:
+              name: keyvault-secrets
+              key: mysql-database-host
+        - name: MYSQL_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: keyvault-secrets
+              key: mysql-database-password
+        - name: MYSQL_DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: keyvault-secrets
+              key: mysql-database-name
   volumes:
     - name: secrets-store01-inline
       csi:
