@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "2017398397007654827"
+      "templateHash": "8232049511033387792"
     }
   },
   "parameters": {
@@ -66,41 +66,7 @@
     "keyVaultName": "[format('kv-{0}-{1}-{2}', parameters('workloadName'), uniqueString(subscription().id), parameters('locationAlias'))]",
     "applicationGatewayPublicIpAddressName": "[format('agw-pip-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]",
     "applicationGatewayName": "[format('agw-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]",
-    "internalLoadBalancerIp": "10.100.0.62",
-    "subnets": [
-      {
-        "subnetAddrPrefix": "[variables('aksSubnetAddrPrefix')]",
-        "subnetName": "[variables('aksSubnetName')]",
-        "vnetName": "[variables('virtualNetworkName')]",
-        "nsgId": "",
-        "routeTableId": "",
-        "delegation": ""
-      },
-      {
-        "subnetAddrPrefix": "[variables('appgatewaySubnetAddrPrefix')]",
-        "subnetName": "[variables('appgatewaySubnetName')]",
-        "vnetName": "[variables('virtualNetworkName')]",
-        "nsgId": "",
-        "routeTableId": "",
-        "delegation": ""
-      },
-      {
-        "subnetAddrPrefix": "[variables('privateLinkSubnetAddrPrefix')]",
-        "subnetName": "[variables('privateLinkSubnetName')]",
-        "vnetName": "[variables('virtualNetworkName')]",
-        "nsgId": "",
-        "routeTableId": "",
-        "delegation": ""
-      },
-      {
-        "subnetAddrPrefix": "[variables('netappSubnetAddrPrefix')]",
-        "subnetName": "[variables('netappSubnetName')]",
-        "vnetName": "[variables('virtualNetworkName')]",
-        "nsgId": "",
-        "routeTableId": "",
-        "delegation": "Microsoft.NetApp/volumes"
-      }
-    ]
+    "internalLoadBalancerIp": "10.100.0.62"
   },
   "resources": {
     "aksResourceGroup": {
@@ -171,7 +137,40 @@
             "value": "[variables('vnetAddrPrefix')]"
           },
           "subnets": {
-            "value": "[variables('subnets')]"
+            "value": [
+              {
+                "subnetAddrPrefix": "[variables('aksSubnetAddrPrefix')]",
+                "subnetName": "[variables('aksSubnetName')]",
+                "vnetName": "[variables('virtualNetworkName')]",
+                "nsgId": "[reference('nsgClusterSubnet').outputs.networkSecurityGroupId.value]",
+                "routeTableId": "",
+                "delegation": ""
+              },
+              {
+                "subnetAddrPrefix": "[variables('appgatewaySubnetAddrPrefix')]",
+                "subnetName": "[variables('appgatewaySubnetName')]",
+                "vnetName": "[variables('virtualNetworkName')]",
+                "nsgId": "[reference('nsgAppGatewaySubnet').outputs.networkSecurityGroupId.value]",
+                "routeTableId": "",
+                "delegation": ""
+              },
+              {
+                "subnetAddrPrefix": "[variables('privateLinkSubnetAddrPrefix')]",
+                "subnetName": "[variables('privateLinkSubnetName')]",
+                "vnetName": "[variables('virtualNetworkName')]",
+                "nsgId": "[reference('nsgPrivateLinkSubnet').outputs.networkSecurityGroupId.value]",
+                "routeTableId": "",
+                "delegation": ""
+              },
+              {
+                "subnetAddrPrefix": "[variables('netappSubnetAddrPrefix')]",
+                "subnetName": "[variables('netappSubnetName')]",
+                "vnetName": "[variables('virtualNetworkName')]",
+                "nsgId": "[reference('nsgNetAppSubnet').outputs.networkSecurityGroupId.value]",
+                "routeTableId": "",
+                "delegation": "Microsoft.NetApp/volumes"
+              }
+            ]
           }
         },
         "template": {
@@ -257,7 +256,11 @@
         }
       },
       "dependsOn": [
-        "aksResourceGroup"
+        "aksResourceGroup",
+        "nsgAppGatewaySubnet",
+        "nsgClusterSubnet",
+        "nsgNetAppSubnet",
+        "nsgPrivateLinkSubnet"
       ]
     },
     "mysql": {
@@ -1701,6 +1704,266 @@
         "aksResourceGroup",
         "keyVaultPrivateDnsZone",
         "mysql"
+      ]
+    },
+    "nsgClusterSubnet": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "nsgClusterSubnet",
+      "resourceGroup": "[variables('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('location')]"
+          },
+          "networkSecurityGroupName": {
+            "value": "[format('nsg-aks-{0}', variables('aksSubnetName'))]"
+          },
+          "securityRules": {
+            "value": []
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "11290132843104703737"
+            }
+          },
+          "parameters": {
+            "networkSecurityGroupName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "securityRules": {
+              "type": "array"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2024-07-01",
+              "name": "[parameters('networkSecurityGroupName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": "[parameters('securityRules')]"
+              }
+            }
+          ],
+          "outputs": {
+            "networkSecurityGroupId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "aksResourceGroup"
+      ]
+    },
+    "nsgPrivateLinkSubnet": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "nsgPrivateLinkSubnet",
+      "resourceGroup": "[variables('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('location')]"
+          },
+          "networkSecurityGroupName": {
+            "value": "[format('nsg-aks-{0}', variables('privateLinkSubnetName'))]"
+          },
+          "securityRules": {
+            "value": []
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "11290132843104703737"
+            }
+          },
+          "parameters": {
+            "networkSecurityGroupName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "securityRules": {
+              "type": "array"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2024-07-01",
+              "name": "[parameters('networkSecurityGroupName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": "[parameters('securityRules')]"
+              }
+            }
+          ],
+          "outputs": {
+            "networkSecurityGroupId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "aksResourceGroup"
+      ]
+    },
+    "nsgAppGatewaySubnet": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "nsgAppGatewaySubnet",
+      "resourceGroup": "[variables('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('location')]"
+          },
+          "networkSecurityGroupName": {
+            "value": "[format('nsg-aks-{0}', variables('appgatewaySubnetName'))]"
+          },
+          "securityRules": {
+            "value": []
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "11290132843104703737"
+            }
+          },
+          "parameters": {
+            "networkSecurityGroupName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "securityRules": {
+              "type": "array"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2024-07-01",
+              "name": "[parameters('networkSecurityGroupName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": "[parameters('securityRules')]"
+              }
+            }
+          ],
+          "outputs": {
+            "networkSecurityGroupId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "aksResourceGroup"
+      ]
+    },
+    "nsgNetAppSubnet": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "nsgNetAppSubnet",
+      "resourceGroup": "[variables('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('location')]"
+          },
+          "networkSecurityGroupName": {
+            "value": "[format('nsg-aks-{0}', variables('netappSubnetName'))]"
+          },
+          "securityRules": {
+            "value": []
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "11290132843104703737"
+            }
+          },
+          "parameters": {
+            "networkSecurityGroupName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "securityRules": {
+              "type": "array"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2024-07-01",
+              "name": "[parameters('networkSecurityGroupName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": "[parameters('securityRules')]"
+              }
+            }
+          ],
+          "outputs": {
+            "networkSecurityGroupId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "aksResourceGroup"
       ]
     }
   }
