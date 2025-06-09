@@ -34,6 +34,7 @@ param kubernetesVersion string = '1.31.7'
 param agentPoolSize string = 'Standard_D4as_v5'
 param userPoolSize string = 'Standard_D4as_v5'
 param clusterAuthorizedIPRanges array = []
+param nodeResourceGroupName string = 'MC_rg-aks-itn_${aksClusterName}_italynorth'
 
 // NetApp Files //
 param netappAccountName string = 'netapp-${workloadName}-${locationAlias}'
@@ -167,8 +168,10 @@ module aksCluster './modules/akscluster.bicep' = {
     kubernetesVersion: kubernetesVersion
     agentPoolSize: agentPoolSize
     userPoolSize: userPoolSize
+    aksVirtualNetworkName: virtualNetworkName
     subnetId: aksVirtualnetwork.outputs.aksSubnetId
     clusterAuthorizedIPRanges: clusterAuthorizedIPRanges
+    nodeResourceGroupName: nodeResourceGroupName
   }
 }
 
@@ -218,17 +221,7 @@ module applicationGateway './modules/applicationgateway.bicep' = {
     aksResourceGroup
   ]
 }
-module aksClusterNetworkContributorRoleAssignment './modules/rbacassignments.bicep' = {
-  name: 'aksClusterNetworkContributorRoleAssignment'
-  scope: resourceGroup(resourceGroupName)
-  params: {
-    principalId: aksCluster.outputs.aksClusterPrincipalId
-    roleDefinitionId: '4d97b98b-1d4f-4787-a291-c67834d212e7'
-  } 
-  dependsOn: [
-    aksResourceGroup
-  ]
-}
+
 
 module keyVaultPrivateEndpoint './modules/privateendpoint.bicep' = {
   name: 'keyVaultPrivateEndpoint'
@@ -270,12 +263,11 @@ module keyVault './modules/keyvault.bicep' = {
     mySqlUser: sqlAdministratorLogin
     mySqlPassword: sqlAdministratorLoginPassword
     mySqlDBName: databaseName
+    aksClusterName: aksClusterName
+    nodeResourceGroupName: nodeResourceGroupName
   }
   dependsOn: [
     aksResourceGroup
     keyVaultPrivateDnsZone
   ]
 }
-
-
-//TODO: existing Managed Identity .... assegna RBAC permission to read secrets from Key Vault "Key Vault Secret User"

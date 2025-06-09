@@ -2,9 +2,12 @@ param clusterName string
 param location string 
 param kubernetesVersion string
 param agentPoolSize string
+param aksVirtualNetworkName string
 param subnetId string
+param nodeResourceGroupName string
 param userPoolSize string
 param clusterAuthorizedIPRanges array
+param roleDefinitionId string = '4d97b98b-1d4f-4787-a291-c67834d212e7'
 
 resource managedCluster 'Microsoft.ContainerService/managedClusters@2025-02-01' = {
   name: clusterName
@@ -90,7 +93,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2025-02-01' 
         enabled: true
       }
     }
-    nodeResourceGroup: 'MC_rg-aks-test-itn_${clusterName}_italynorth'
+    nodeResourceGroup: nodeResourceGroupName
     enableRBAC: true
     enablePodSecurityPolicy: false
     networkProfile: {
@@ -187,5 +190,17 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2025-02-01' 
   }
 }
 
-output aksClusterPrincipalId string = managedCluster.identity.principalId
+resource aksVirtualnetwork 'Microsoft.Network/virtualNetworks@2024-05-01' existing = {
+  name: aksVirtualNetworkName
+}
+
+resource aksClusterNetworkContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(roleDefinitionId, resourceGroup().id)
+  scope: aksVirtualnetwork
+  properties: {
+    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionId)
+    principalId: managedCluster.identity.principalId
+  }
+}
+
 

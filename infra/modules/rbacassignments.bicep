@@ -1,14 +1,14 @@
-param roleDefinitionId string
+/*param roleDefinitionId string
 param principalId string
-
 var roleAssignmentName = guid(roleDefinitionId, principalId, resourceGroup().id)
 
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: resourceGroup()
+  scope: scope
   name: roleAssignmentName
   properties: {
     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionId)
     principalId: principalId
   }
 }
+  */
 

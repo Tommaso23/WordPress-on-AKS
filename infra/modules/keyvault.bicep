@@ -6,6 +6,9 @@ param mySqlUser string
 @secure()
 param mySqlPassword string
 param mySqlDBName string
+param aksClusterName string
+param nodeResourceGroupName string
+param roleDefinitionId string = 'b24988ac-6180-42a0-ab88-20f7382dd24c' // Key Vault Secrets User
 
 resource keyVault 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
   name: keyVaultName
@@ -63,6 +66,20 @@ resource mySqlDatabaseName 'Microsoft.KeyVault/vaults/secrets@2024-12-01-preview
   name: 'mysql-database-name' //key
   properties: {
     value: mySqlDBName // secret value
+  }
+}
+
+resource keyVaultManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2025-01-31-preview' existing = {
+  name: 'azurekeyvaultsecretsprovider-${aksClusterName}'
+  scope: resourceGroup(nodeResourceGroupName)
+}
+
+resource keyVaultManagedIdentitySecretsUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: keyVault // Replace with the actual scope if needed
+  name: guid(roleDefinitionId, resourceGroup().id)
+  properties: {
+    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionId)
+    principalId: keyVaultManagedIdentity.id
   }
 }
 
