@@ -17,8 +17,7 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az bicep upgrade
-            az bicep build --file infra/main.bicep --outfile azuredeploy.json &&
-            az bicep build-params --file infra/parameters/parameters.bicepparam --outfile azuredeploy.parameters.json
+            az bicep build --file infra/main.bicep --outfile azuredeploy.json
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
         with:
