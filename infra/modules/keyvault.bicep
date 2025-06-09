@@ -79,7 +79,7 @@ resource keyVaultManagedIdentitySecretsUserRoleAssignment 'Microsoft.Authorizati
   name: guid(roleDefinitionId, resourceGroup().id)
   properties: {
     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionId)
-    principalId: keyVaultManagedIdentity.id
+    principalId: keyVaultManagedIdentity.properties.principalId
   }
 }
 
