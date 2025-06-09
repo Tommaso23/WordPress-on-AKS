@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "9586257682423688757"
+      "templateHash": "17126584083770849084"
     }
   },
   "parameters": {
@@ -1269,7 +1269,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "14958700876214414712"
+              "templateHash": "18414898197963798841"
             }
           },
           "parameters": {
@@ -1359,7 +1359,10 @@
                       "protocol": "Http",
                       "cookieBasedAffinity": "Disabled",
                       "pickHostNameFromBackendAddress": false,
-                      "requestTimeout": 20
+                      "requestTimeout": 20,
+                      "probe": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/probes', parameters('applicationGatewayName'), 'probe-aks-internal-lb')]"
+                      }
                     }
                   }
                 ],
