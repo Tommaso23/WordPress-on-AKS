@@ -22,7 +22,7 @@ var netappSubnetAddrPrefix string = '10.100.0.144/28'
 var mysqlPrivateEndpointName string = 'pe-mysql-${workloadName}-${locationAlias}'
 var mySqlDnsZoneName = 'privatelink.mysql.database.azure.com'
 
-param sqlServerName string = 'sql-${workloadName}-${locationAlias}'
+var sqlServerName string = 'sql-${workloadName}-${locationAlias}'
 param sqlAdministratorLogin string
 @secure()
 param sqlAdministratorLoginPassword string
