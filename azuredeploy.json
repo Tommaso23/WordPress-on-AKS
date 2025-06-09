@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "18197081667594828841"
+      "templateHash": "2017398397007654827"
     }
   },
   "parameters": {
@@ -21,10 +21,6 @@
       "metadata": {
         "description": "Alias for the location, used to create unique resource names."
       }
-    },
-    "sqlServerName": {
-      "type": "string",
-      "defaultValue": "[format('sql-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "sqlAdministratorLogin": {
       "type": "string"
@@ -48,6 +44,7 @@
     "netappSubnetAddrPrefix": "10.100.0.144/28",
     "mysqlPrivateEndpointName": "[format('pe-mysql-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]",
     "mySqlDnsZoneName": "privatelink.mysql.database.azure.com",
+    "sqlServerName": "[format('sql-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]",
     "databaseName": "[format('db-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]",
     "sqlVersion": "8.0.21",
     "sqlServerSKU": "Standard_B1ms",
@@ -275,7 +272,7 @@
         "mode": "Incremental",
         "parameters": {
           "sqlServerName": {
-            "value": "[parameters('sqlServerName')]"
+            "value": "[variables('sqlServerName')]"
           },
           "location": {
             "value": "[variables('location')]"
