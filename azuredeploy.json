@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "6750233491982206755"
+      "templateHash": "11653315414694835990"
     }
   },
   "parameters": {
@@ -108,6 +108,10 @@
     "clusterAuthorizedIPRanges": {
       "type": "array",
       "defaultValue": []
+    },
+    "nodeResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[format('MC_rg-aks-itn_{0}_italynorth', parameters('aksClusterName'))]"
     },
     "netappAccountName": {
       "type": "string",
@@ -718,11 +722,17 @@
           "userPoolSize": {
             "value": "[parameters('userPoolSize')]"
           },
+          "aksVirtualNetworkName": {
+            "value": "[parameters('virtualNetworkName')]"
+          },
           "subnetId": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork'), '2022-09-01').outputs.aksSubnetId.value]"
           },
           "clusterAuthorizedIPRanges": {
             "value": "[parameters('clusterAuthorizedIPRanges')]"
+          },
+          "nodeResourceGroupName": {
+            "value": "[parameters('nodeResourceGroupName')]"
           }
         },
         "template": {
@@ -732,7 +742,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "15176482206074342650"
+              "templateHash": "12556831139909450374"
             }
           },
           "parameters": {
@@ -748,7 +758,13 @@
             "agentPoolSize": {
               "type": "string"
             },
+            "aksVirtualNetworkName": {
+              "type": "string"
+            },
             "subnetId": {
+              "type": "string"
+            },
+            "nodeResourceGroupName": {
               "type": "string"
             },
             "userPoolSize": {
@@ -756,6 +772,10 @@
             },
             "clusterAuthorizedIPRanges": {
               "type": "array"
+            },
+            "roleDefinitionId": {
+              "type": "string",
+              "defaultValue": "4d97b98b-1d4f-4787-a291-c67834d212e7"
             }
           },
           "resources": [
@@ -845,7 +865,7 @@
                     "enabled": true
                   }
                 },
-                "nodeResourceGroup": "[format('MC_rg-aks-test-itn_{0}_italynorth', parameters('clusterName'))]",
+                "nodeResourceGroup": "[parameters('nodeResourceGroupName')]",
                 "enableRBAC": true,
                 "enablePodSecurityPolicy": false,
                 "networkProfile": {
@@ -940,14 +960,21 @@
                 "name": "Base",
                 "tier": "Standard"
               }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Network/virtualNetworks/{0}', parameters('aksVirtualNetworkName'))]",
+              "name": "[guid(parameters('roleDefinitionId'), resourceGroup().id)]",
+              "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2025-02-01', 'full').identity.principalId]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]"
+              ]
             }
-          ],
-          "outputs": {
-            "aksClusterPrincipalId": {
-              "type": "string",
-              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2025-02-01', 'full').identity.principalId]"
-            }
-          }
+          ]
         }
       },
       "dependsOn": [
@@ -1401,63 +1428,6 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "aksClusterNetworkContributorRoleAssignment",
-      "resourceGroup": "[parameters('resourceGroupName')]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "principalId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksCluster'), '2022-09-01').outputs.aksClusterPrincipalId.value]"
-          },
-          "roleDefinitionId": {
-            "value": "4d97b98b-1d4f-4787-a291-c67834d212e7"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "4417456753614125144"
-            }
-          },
-          "parameters": {
-            "roleDefinitionId": {
-              "type": "string"
-            },
-            "principalId": {
-              "type": "string"
-            }
-          },
-          "variables": {
-            "roleAssignmentName": "[guid(parameters('roleDefinitionId'), parameters('principalId'), resourceGroup().id)]"
-          },
-          "resources": [
-            {
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "name": "[variables('roleAssignmentName')]",
-              "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
-                "principalId": "[parameters('principalId')]"
-              }
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksCluster')]",
-        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
       "name": "keyVaultPrivateEndpoint",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -1679,6 +1649,12 @@
           },
           "mySqlDBName": {
             "value": "[parameters('databaseName')]"
+          },
+          "aksClusterName": {
+            "value": "[parameters('aksClusterName')]"
+          },
+          "nodeResourceGroupName": {
+            "value": "[parameters('nodeResourceGroupName')]"
           }
         },
         "template": {
@@ -1688,7 +1664,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "18103213531764702786"
+              "templateHash": "16235986592758525687"
             }
           },
           "parameters": {
@@ -1709,6 +1685,16 @@
             },
             "mySqlDBName": {
               "type": "string"
+            },
+            "aksClusterName": {
+              "type": "string"
+            },
+            "nodeResourceGroupName": {
+              "type": "string"
+            },
+            "roleDefinitionId": {
+              "type": "string",
+              "defaultValue": "b24988ac-6180-42a0-ab88-20f7382dd24c"
             }
           },
           "resources": [
@@ -1779,6 +1765,19 @@
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'mysql-database-name')]",
               "properties": {
                 "value": "[parameters('mySqlDBName')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('keyVaultName'))]",
+              "name": "[guid(parameters('roleDefinitionId'), resourceGroup().id)]",
+              "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+                "principalId": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('nodeResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', format('azurekeyvaultsecretsprovider-{0}', parameters('aksClusterName')))]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
