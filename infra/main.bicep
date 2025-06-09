@@ -279,7 +279,7 @@ module nsgClusterSubnet './modules/networksecuritygroup.bicep' = {
   scope: resourceGroup(resourceGroupName)
   params: {
     location: location
-    networkSecurityGroupName: 'nsg-aks-${aksSubnetName}'
+    networkSecurityGroupName: 'nsg-${aksSubnetName}'
     securityRules: []
   }
   dependsOn: [
@@ -292,7 +292,7 @@ module nsgPrivateLinkSubnet './modules/networksecuritygroup.bicep' = {
   scope: resourceGroup(resourceGroupName)
   params: {
     location: location
-    networkSecurityGroupName: 'nsg-aks-${privateLinkSubnetName}'
+    networkSecurityGroupName: 'nsg-${privateLinkSubnetName}'
     securityRules: []
   }
   dependsOn: [
@@ -305,8 +305,37 @@ module nsgAppGatewaySubnet './modules/networksecuritygroup.bicep' = {
   scope: resourceGroup(resourceGroupName)
   params: {
     location: location
-    networkSecurityGroupName: 'nsg-aks-${appgatewaySubnetName}'
-    securityRules: []
+    networkSecurityGroupName: 'nsg-${appgatewaySubnetName}'
+    securityRules: [
+      {
+        name: 'AllowAllOutbound'
+        properties: {
+          description: ''
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 1000
+          direction: 'Outbound'
+        }
+      }
+      {
+        name: 'AllowHealthProbesInbound'
+        properties: {
+          description: 'Allow Azure Health Probes in. (https://learn.microsoft.com/azure/application-gateway/configuration-infrastructure#network-security-groups)'
+          protocol: '*'
+          sourcePortRange: '*'
+          sourceAddressPrefix: 'AzureLoadBalancer'
+          destinationPortRange: '*'
+          destinationAddressPrefix: '*'
+          direction: 'Inbound'
+          access: 'Allow'
+          priority: 120
+        }
+      }
+    ]
   }
   dependsOn: [
     aksResourceGroup
@@ -318,7 +347,7 @@ module nsgNetAppSubnet './modules/networksecuritygroup.bicep' = {
   scope: resourceGroup(resourceGroupName)
   params: {
     location: location
-    networkSecurityGroupName: 'nsg-aks-${netappSubnetName}'
+    networkSecurityGroupName: 'nsg-${netappSubnetName}'
     securityRules: []
   }
   dependsOn: [

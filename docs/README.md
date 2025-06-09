@@ -50,9 +50,9 @@ The deployment order respects resource dependencies and includes the following m
 
 - `namespace.yaml` (creates the wordpress namespace)
 
-- `pv-nfs.yaml` (persistent volumes using Azure NetApp Files)
+- `pv-wp.yaml` (persistent volumes using Azure NetApp Files)
 
-- `pvc-nfs.yaml` (persistent volume claims)
+- `pvc-wp.yaml` (persistent volume claims)
 
 - `nginx-internal-controller.yaml` (NGINX ingress controller in its own namespace)
 

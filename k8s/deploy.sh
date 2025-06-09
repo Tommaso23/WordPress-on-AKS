@@ -2,8 +2,8 @@
 #Connessione al cluster AKS con az aks get-credentials...
 #!/bin/bash
 
-rg="<INSERT_RESOURCE_GROUP_NAME>"  # Replace with your resource group name
-cluster="<INSERT_CLUSTER_NAME>"  # Replace with your AKS cluster name
+rg="rg-aks-bcp-itn"  # Replace with your resource group name
+cluster="aks-bcp-itn"  # Replace with your AKS cluster name
 
 echo "Connecting to AKS cluster..."
 az aks get-credentials --resource-group "$rg" --name "$cluster" --overwrite-existing
@@ -24,14 +24,14 @@ export clientid keyvaultname tenantid
 
 # Generate final secretprovider.yaml with actual values
 echo "Generating 'secretprovider.yaml' from template..."
-envsubst < secretprovider-temp.yaml > secretprovider.yaml
+envsubst < k8s/wordpress/secretprovider-temp.yaml > k8s/wordpress/secretprovider.yaml
 
 # Apply Kubernetes manifests in order
 echo "Deploying YAML files to the cluster..."
-
+cd k8s/wordpress
 kubectl apply -f namespace.yaml
-kubectl apply -f pv-nfs.yaml
-kubectl apply -f pvc-nfs.yaml
+kubectl apply -f pv-wp.yaml
+kubectl apply -f pvc-wp.yaml
 kubectl apply -f nginx-internal-controller.yaml
 kubectl apply -f nginx.yaml
 kubectl apply -f secretprovider.yaml
