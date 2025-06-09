@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: wordpress
+  namespace: wordpress
 spec:
   ingressClassName: nginx-internal
   rules:

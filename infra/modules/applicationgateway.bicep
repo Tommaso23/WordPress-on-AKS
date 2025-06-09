@@ -72,6 +72,9 @@ resource applicationGateways_agw_aks_test_itn_name_resource 'Microsoft.Network/a
           cookieBasedAffinity: 'Disabled'
           pickHostNameFromBackendAddress: false
           requestTimeout: 20
+          probe: {
+            id: resourceId('Microsoft.Network/applicationGateways/probes', applicationGatewayName, 'probe-aks-internal-lb')
+          }
         }
       }
     ]
