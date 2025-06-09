@@ -8,7 +8,7 @@ param mySqlPassword string
 param mySqlDBName string
 param aksClusterName string
 param nodeResourceGroupName string
-param roleDefinitionId string = 'b24988ac-6180-42a0-ab88-20f7382dd24c' // Key Vault Secrets User
+param roleDefinitionId string = '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User
 
 resource keyVault 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
   name: keyVaultName
