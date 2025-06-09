@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "11653315414694835990"
+      "templateHash": "10541689570100382378"
     }
   },
   "parameters": {
@@ -1664,7 +1664,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "16235986592758525687"
+              "templateHash": "5233725406418978385"
             }
           },
           "parameters": {
@@ -1777,7 +1777,7 @@
               "name": "[guid(parameters('roleDefinitionId'), resourceGroup().id)]",
               "properties": {
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
-                "principalId": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('nodeResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', format('azurekeyvaultsecretsprovider-{0}', parameters('aksClusterName')))]"
+                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('nodeResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', format('azurekeyvaultsecretsprovider-{0}', parameters('aksClusterName'))), '2025-01-31-preview').principalId]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
