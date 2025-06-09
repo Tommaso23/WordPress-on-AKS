@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "9903082917423607658"
+      "templateHash": "6750233491982206755"
     }
   },
   "parameters": {
@@ -16,16 +16,16 @@
     "workloadName": {
       "type": "string"
     },
-    "locationalias": {
+    "locationAlias": {
       "type": "string"
     },
     "resourceGroupName": {
       "type": "string",
-      "defaultValue": "[format('rg-aks-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+      "defaultValue": "[format('rg-aks-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "virtualNetworkName": {
       "type": "string",
-      "defaultValue": "[format('vnet-aks-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+      "defaultValue": "[format('vnet-aks-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "vnetAddrPrefix": {
       "type": "string",
@@ -65,11 +65,11 @@
     },
     "mysqlPrivateEndpointName": {
       "type": "string",
-      "defaultValue": "[format('pe-mysql-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+      "defaultValue": "[format('pe-mysql-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "sqlServerName": {
       "type": "string",
-      "defaultValue": "[format('sql-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+      "defaultValue": "[format('sql-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "sqlAdministratorLogin": {
       "type": "string"
@@ -79,7 +79,7 @@
     },
     "databaseName": {
       "type": "string",
-      "defaultValue": "[format('db-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+      "defaultValue": "[format('db-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "sqlVersion": {
       "type": "string",
@@ -88,6 +88,10 @@
     "sqlServerSKU": {
       "type": "string",
       "defaultValue": "Standard_B1ms"
+    },
+    "aksClusterName": {
+      "type": "string",
+      "defaultValue": "[format('aks-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "kubernetesVersion": {
       "type": "string",
@@ -107,15 +111,15 @@
     },
     "netappAccountName": {
       "type": "string",
-      "defaultValue": "[format('netapp-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+      "defaultValue": "[format('netapp-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "capacityPoolName": {
       "type": "string",
-      "defaultValue": "[format('pool-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+      "defaultValue": "[format('pool-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "volumeName": {
       "type": "string",
-      "defaultValue": "[format('vol-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+      "defaultValue": "[format('vol-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "serviceLevel": {
       "type": "string",
@@ -133,13 +137,21 @@
       "type": "int",
       "defaultValue": 1
     },
+    "keyVaultPrivateEndpointName": {
+      "type": "string",
+      "defaultValue": "[format('pe-kv-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
+    },
+    "keyVaultName": {
+      "type": "string",
+      "defaultValue": "[format('kv-{0}-{1}-{2}', parameters('workloadName'), uniqueString(subscription().id), parameters('locationAlias'))]"
+    },
     "applicationGatewayPublicIpAddressName": {
       "type": "string",
-      "defaultValue": "[format('agw-pip-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+      "defaultValue": "[format('agw-pip-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "applicationGatewayName": {
       "type": "string",
-      "defaultValue": "[format('agw-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+      "defaultValue": "[format('agw-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]"
     },
     "internalLoadBalancerIp": {
       "type": "string",
@@ -148,6 +160,7 @@
   },
   "variables": {
     "mySqlDnsZoneName": "privatelink.mysql.database.azure.com",
+    "keyVaultDnsZoneName": "privatelink.vaultcore.azure.net",
     "subnets": [
       {
         "subnetAddrPrefix": "[parameters('aksSubnetAddrPrefix')]",
@@ -381,7 +394,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "5926071728549138481"
+              "templateHash": "9257226833745729387"
             }
           },
           "parameters": {
@@ -471,6 +484,10 @@
             "sqlServerId": {
               "type": "string",
               "value": "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName'))]"
+            },
+            "connectionString": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName')), '2023-12-30').fullyQualifiedDomainName]"
             }
           }
         }
@@ -687,7 +704,7 @@
         "mode": "Incremental",
         "parameters": {
           "clusterName": {
-            "value": "[format('aks-{0}-{1}', parameters('workloadName'), parameters('locationalias'))]"
+            "value": "[parameters('aksClusterName')]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -715,7 +732,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "5094281060974866243"
+              "templateHash": "15176482206074342650"
             }
           },
           "parameters": {
@@ -822,7 +839,7 @@
                 },
                 "addonProfiles": {
                   "azureKeyvaultSecretsProvider": {
-                    "enabled": false
+                    "enabled": true
                   },
                   "azurepolicy": {
                     "enabled": true
@@ -1225,7 +1242,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "16548075621062426281"
+              "templateHash": "14958700876214414712"
             }
           },
           "parameters": {
@@ -1353,6 +1370,22 @@
                       }
                     }
                   }
+                ],
+                "probes": [
+                  {
+                    "name": "probe-aks-internal-lb",
+                    "properties": {
+                      "protocol": "Http",
+                      "path": "/healthz",
+                      "host": "10.100.0.62",
+                      "interval": 30,
+                      "timeout": 30,
+                      "unhealthyThreshold": 3,
+                      "pickHostNameFromBackendHttpSettings": false,
+                      "minServers": 0,
+                      "match": {}
+                    }
+                  }
                 ]
               }
             }
@@ -1420,6 +1453,350 @@
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksCluster')]",
         "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "keyVaultPrivateEndpoint",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "privateEndpointName": {
+            "value": "[parameters('keyVaultPrivateEndpointName')]"
+          },
+          "subnetPrivateEndpointId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork'), '2022-09-01').outputs.privateLinkSubnetId.value]"
+          },
+          "linkedResourceId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'keyVault'), '2022-09-01').outputs.keyVaultId.value]"
+          },
+          "serviceName": {
+            "value": "vault"
+          },
+          "privateDnsZoneId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'KeyVaultPrivateDnsZone'), '2022-09-01').outputs.dnsZoneId.value]"
+          },
+          "virtualNetworkName": {
+            "value": "[parameters('virtualNetworkName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "5965447070968227322"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "privateEndpointName": {
+              "type": "string"
+            },
+            "subnetPrivateEndpointId": {
+              "type": "string"
+            },
+            "linkedResourceId": {
+              "type": "string"
+            },
+            "serviceName": {
+              "type": "string"
+            },
+            "privateDnsZoneId": {
+              "type": "string"
+            },
+            "virtualNetworkName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('privateEndpointName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('subnetPrivateEndpointId')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('privateEndpointName')]",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('linkedResourceId')]",
+                      "groupIds": [
+                        "[parameters('serviceName')]"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2024-05-01",
+              "name": "[format('{0}/{1}', parameters('privateEndpointName'), 'default')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "[format('privatelink.{0}.azure.com', parameters('serviceName'))]",
+                    "properties": {
+                      "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpointName'))]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'keyVault')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'KeyVaultPrivateDnsZone')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "KeyVaultPrivateDnsZone",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[variables('keyVaultDnsZoneName')]"
+          },
+          "virtualNetworkName": {
+            "value": "[parameters('virtualNetworkName')]"
+          },
+          "virtualNetworkId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork'), '2022-09-01').outputs.vnetId.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "3047665738206839646"
+            }
+          },
+          "parameters": {
+            "dnsZoneName": {
+              "type": "string"
+            },
+            "virtualNetworkName": {
+              "type": "string"
+            },
+            "virtualNetworkId": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "[parameters('dnsZoneName')]",
+              "location": "global",
+              "properties": {}
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', parameters('dnsZoneName'), format('vlink-{0}', parameters('virtualNetworkName')))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('virtualNetworkId')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('dnsZoneName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "dnsZoneId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/privateDnsZones', parameters('dnsZoneName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'aksVirtualnetwork')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "keyVault",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('keyVaultName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "mySqlConnectionString": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'mysql'), '2022-09-01').outputs.connectionString.value]"
+          },
+          "mySqlUser": {
+            "value": "[parameters('sqlAdministratorLogin')]"
+          },
+          "mySqlPassword": {
+            "value": "[parameters('sqlAdministratorLoginPassword')]"
+          },
+          "mySqlDBName": {
+            "value": "[parameters('databaseName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "18103213531764702786"
+            }
+          },
+          "parameters": {
+            "keyVaultName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "mySqlConnectionString": {
+              "type": "string"
+            },
+            "mySqlUser": {
+              "type": "string"
+            },
+            "mySqlPassword": {
+              "type": "securestring"
+            },
+            "mySqlDBName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[parameters('keyVaultName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "accessPolicies": [],
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "networkAcls": {
+                  "bypass": "None",
+                  "defaultAction": "Deny",
+                  "ipRules": [],
+                  "virtualNetworkRules": []
+                },
+                "enableRbacAuthorization": true,
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false,
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 7,
+                "createMode": "default",
+                "publicNetworkAccess": "Disabled"
+              }
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'mysql-database-host')]",
+              "properties": {
+                "value": "[parameters('mySqlConnectionString')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'mysql-database-user')]",
+              "properties": {
+                "value": "[parameters('mySqlUser')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'mysql-database-password')]",
+              "properties": {
+                "value": "[parameters('mySqlPassword')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'mysql-database-name')]",
+              "properties": {
+                "value": "[parameters('mySqlDBName')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "keyVaultId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'aksResourceGroup')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'KeyVaultPrivateDnsZone')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'mysql')]"
       ]
     }
   ]

@@ -278,4 +278,4 @@ module keyVault './modules/keyvault.bicep' = {
 }
 
 
-
+//TODO: existing Managed Identity .... assegna RBAC permission to read secrets from Key Vault "Key Vault Secret User"
