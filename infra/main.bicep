@@ -286,7 +286,7 @@ module nsgClusterSubnet './modules/networksecuritygroup.bicep' = {
     aksResourceGroup
   ]
 }
-
+//TODO: Add NSG rules for subnets
 module nsgPrivateLinkSubnet './modules/networksecuritygroup.bicep' = {
   name: 'nsgPrivateLinkSubnet'
   scope: resourceGroup(resourceGroupName)
