@@ -17,7 +17,8 @@ At a high level, the solution consists of an AKS cluster hosting the WordPress a
 *Download the [architecture.vsdx](./architecture.vsdx) file of the architecture*
 
 ### Azure Kubernetes Service (AKS)
-The AKS cluster is deployed with Azure CNI Overlay, which enables Kubernetes pods to receive IPs from a private overlay address space, decoupled from the virtual network subnet. This model simplifies IP management and reduces subnet exhaustion risks, especially in large or dynamic environments. The cluster hosts all application workloads, ingress components, and integrates with Azure Active Directory and Key Vault for security and identity.
+The AKS cluster is deployed with Azure CNI Overlay, which enables Kubernetes pods to receive IPs from a private overlay address space, decoupled from the virtual network subnet. This model simplifies IP management and reduces subnet exhaustion risks, especially in large or dynamic environments.
+The NGINX Ingress Controller is deployed using the App Routing add-on, which simplifies the integration of ingress traffic management within AKS clusters. For more details on the App Routing add-on and its capabilities, please refer to the official documentation: [Managed NGINX ingress with the application routing add-on](https://learn.microsoft.com/en-us/azure/aks/app-routing)
 
 ### Azure Key Vault + CSI Driver
 Instead of storing application secrets as base64-encoded Kubernetes Secret objects, this architecture integrates Azure Key Vault through the CSI Secrets Store Driver. This allows secrets (such as database credentials or application keys) to be securely pulled from Key Vault at runtime and mounted as volumes in the WordPress pod, without ever persisting them in the cluster's etcd database. This significantly reduces the attack surface and enforces centralized secret governance.
