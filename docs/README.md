@@ -16,3 +16,4 @@ This repo contains the initial setup required to...
 
 The az aks get-credentials command will be fetch a kubeconfig containing references to the AKS cluster you have created earlier.
 
+minimum kubectl version: 1.30.x

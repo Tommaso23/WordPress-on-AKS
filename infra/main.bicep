@@ -62,7 +62,7 @@ var subnets = [
 
     subnetName: aksSubnetName
     vnetName: virtualNetworkName
-    nsgId: ''
+    nsgId: nsgClusterSubnet.outputs.networkSecurityGroupId
     routeTableId: ''
     delegation: ''
   }
@@ -70,7 +70,7 @@ var subnets = [
     subnetAddrPrefix: appgatewaySubnetAddrPrefix
     subnetName: appgatewaySubnetName
     vnetName: virtualNetworkName
-    nsgId: ''
+    nsgId: nsgAppGatewaySubnet.outputs.networkSecurityGroupId
     routeTableId: ''
     delegation: ''
   }
@@ -78,7 +78,7 @@ var subnets = [
     subnetAddrPrefix: privateLinkSubnetAddrPrefix
     subnetName: privateLinkSubnetName
     vnetName: virtualNetworkName
-    nsgId: ''
+    nsgId: nsgPrivateLinkSubnet.outputs.networkSecurityGroupId
     routeTableId: ''
     delegation: ''
   }
@@ -86,7 +86,7 @@ var subnets = [
     subnetAddrPrefix: netappSubnetAddrPrefix
     subnetName: netappSubnetName
     vnetName: virtualNetworkName
-    nsgId: ''
+    nsgId: nsgNetAppSubnet.outputs.networkSecurityGroupId
     routeTableId: ''
     delegation: 'Microsoft.NetApp/volumes'
   }
@@ -271,5 +271,57 @@ module keyVault './modules/keyvault.bicep' = {
   dependsOn: [
     aksResourceGroup
     keyVaultPrivateDnsZone
+  ]
+}
+
+module nsgClusterSubnet './modules/networksecuritygroup.bicep' = {
+  name: 'nsgClusterSubnet'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    networkSecurityGroupName: 'nsg-aks-${aksSubnetName}'
+    securityRules: []
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
+
+module nsgPrivateLinkSubnet './modules/networksecuritygroup.bicep' = {
+  name: 'nsgPrivateLinkSubnet'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    networkSecurityGroupName: 'nsg-aks-${privateLinkSubnetName}'
+    securityRules: []
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
+
+module nsgAppGatewaySubnet './modules/networksecuritygroup.bicep' = {
+  name: 'nsgAppGatewaySubnet'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    networkSecurityGroupName: 'nsg-aks-${appgatewaySubnetName}'
+    securityRules: []
+  }
+  dependsOn: [
+    aksResourceGroup
+  ]
+}
+
+module nsgNetAppSubnet './modules/networksecuritygroup.bicep' = {
+  name: 'nsgNetAppSubnet'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    networkSecurityGroupName: 'nsg-aks-${netappSubnetName}'
+    securityRules: []
+  }
+  dependsOn: [
+    aksResourceGroup
   ]
 }

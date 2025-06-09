@@ -4,7 +4,7 @@ param applicationGatewaySubnetId string
 param appGatewayPublicIpAddressId string
 param internalLoadBalancerIp string
 
-resource applicationGateways_agw_aks_test_itn_name_resource 'Microsoft.Network/applicationGateways@2024-05-01' = {
+resource applicationGateway 'Microsoft.Network/applicationGateways@2024-05-01' = {
   name: applicationGatewayName
   location: location
   zones: [
