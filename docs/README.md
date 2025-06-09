@@ -1,6 +1,6 @@
 # Wordpress on Azure Kubernetes Service: Step-by-Step Guide
 This repo contains the initial setup required
-![Architecture Diagram](./docs/architecture.vsdx)
+![Architecture Diagram](./docs/architecture.svg)
 
 *Figure 1: Wordpres on Azure Kubernetes Services Architecture*
 
