@@ -460,7 +460,7 @@
 			</v:userDefs>
 			<path d="M7.68 496.06 L8.04 496.06 L67.76 496.06" class="st18"/>
 		</g>
-		<g id="group138-97" transform="translate(799.438,-205.598)" v:mID="138" v:groupContext="group">
+		<g id="group138-97" transform="translate(799.438,-201.462)" v:mID="138" v:groupContext="group">
 			<title>Azure Database MySQL Server</title>
 			<desc>Azure Database for MySQL – flexible server</desc>
 			<g id="shape139-98" v:mID="139" v:groupContext="shape">
@@ -1087,9 +1087,9 @@
 			<title>Sheet.1236</title>
 			<path d="M0 496.06 L9.16 496.06" class="st35"/>
 		</g>
-		<g id="shape1242-199" v:mID="1242" v:groupContext="shape" transform="translate(701.501,-219.452) rotate(-0.503187)">
+		<g id="shape1242-199" v:mID="1242" v:groupContext="shape" transform="translate(705.907,-219.472) rotate(0.00569688)">
 			<title>Sheet.1242</title>
-			<path d="M0 496.06 L75.4 496.06" class="st36"/>
+			<path d="M0 496.06 L85.54 496.06" class="st36"/>
 		</g>
 		<g id="shape1144-205" v:mID="1144" v:groupContext="shape" transform="translate(526.345,-289.888)">
 			<title>Sheet.1144</title>

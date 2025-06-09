@@ -1,59 +1,61 @@
 targetScope = 'subscription'
-param location string = deployment().location
+var location string = deployment().location
 
+@description('Name of the workload')
 param workloadName string
+@description('Alias for the location, used to create unique resource names.')
 param locationAlias string
-param resourceGroupName string = 'rg-aks-${workloadName}-${locationAlias}'
+var resourceGroupName string = 'rg-aks-${workloadName}-${locationAlias}'
 
-param virtualNetworkName string = 'vnet-aks-${workloadName}-${locationAlias}'
-param vnetAddrPrefix string = '10.100.0.0/24'
+var virtualNetworkName string = 'vnet-aks-${workloadName}-${locationAlias}'
+var vnetAddrPrefix string = '10.100.0.0/24'
 
-param aksSubnetName string = 'snet-clusternodes-aks'
-param aksSubnetAddrPrefix string = '10.100.0.0/26'
-param appgatewaySubnetName string = 'snet-agw-aks'
-param appgatewaySubnetAddrPrefix string = '10.100.0.64/26'
-param privateLinkSubnetName string = 'snet-pep-aks'
-param privateLinkSubnetAddrPrefix string = '10.100.0.128/28'
-param netappSubnetName string = 'snet-netapp-aks'
-param netappSubnetAddrPrefix string = '10.100.0.144/28'
+var aksSubnetName string = 'snet-clusternodes-aks'
+var aksSubnetAddrPrefix string = '10.100.0.0/26'
+var appgatewaySubnetName string = 'snet-agw-aks'
+var appgatewaySubnetAddrPrefix string = '10.100.0.64/26'
+var privateLinkSubnetName string = 'snet-pep-aks'
+var privateLinkSubnetAddrPrefix string = '10.100.0.128/28'
+var netappSubnetName string = 'snet-netapp-aks'
+var netappSubnetAddrPrefix string = '10.100.0.144/28'
 
-param mysqlPrivateEndpointName string = 'pe-mysql-${workloadName}-${locationAlias}'
+var mysqlPrivateEndpointName string = 'pe-mysql-${workloadName}-${locationAlias}'
 var mySqlDnsZoneName = 'privatelink.mysql.database.azure.com'
 
 param sqlServerName string = 'sql-${workloadName}-${locationAlias}'
 param sqlAdministratorLogin string
 @secure()
 param sqlAdministratorLoginPassword string
-param databaseName string = 'db-${workloadName}-${locationAlias}'
-param sqlVersion string = '8.0.21'
-param sqlServerSKU string = 'Standard_B1ms'
+var databaseName string = 'db-${workloadName}-${locationAlias}'
+var sqlVersion string = '8.0.21'
+var sqlServerSKU string = 'Standard_B1ms'
 
 // AKS Cluster //
-param aksClusterName string = 'aks-${workloadName}-${locationAlias}'
-param kubernetesVersion string = '1.31.7'
-param agentPoolSize string = 'Standard_D4as_v5'
-param userPoolSize string = 'Standard_D4as_v5'
-param clusterAuthorizedIPRanges array = []
-param nodeResourceGroupName string = 'MC_rg-aks-itn_${aksClusterName}_italynorth'
+var aksClusterName string = 'aks-${workloadName}-${locationAlias}'
+var kubernetesVersion string = '1.31.7'
+var agentPoolSize string = 'Standard_D4as_v5'
+var userPoolSize string = 'Standard_D4as_v5'
+var clusterAuthorizedIPRanges array = []
+var nodeResourceGroupName string = 'MC_rg-aks-itn_${aksClusterName}_italynorth'
 
 // NetApp Files //
-param netappAccountName string = 'netapp-${workloadName}-${locationAlias}'
-param capacityPoolName string = 'pool-${workloadName}-${locationAlias}'
-param volumeName string = 'vol-${workloadName}-${locationAlias}'
-param serviceLevel string = 'Premium'
-param numberOfTB int = 1
-param qosType string = 'Auto'
-param numberOf50GB int = 1
+var netappAccountName string = 'netapp-${workloadName}-${locationAlias}'
+var capacityPoolName string = 'pool-${workloadName}-${locationAlias}'
+var volumeName string = 'vol-${workloadName}-${locationAlias}'
+var serviceLevel string = 'Premium'
+var numberOfTB int = 1
+var qosType string = 'Auto'
+var numberOf50GB int = 1
 
 // Key Vault //
-param keyVaultPrivateEndpointName string = 'pe-kv-${workloadName}-${locationAlias}'
+var keyVaultPrivateEndpointName string = 'pe-kv-${workloadName}-${locationAlias}'
 var keyVaultDnsZoneName = 'privatelink.vaultcore.azure.net'
-param keyVaultName string = 'kv-${workloadName}-${uniqueString(subscription().id)}-${locationAlias}'
+var keyVaultName string = 'kv-${workloadName}-${uniqueString(subscription().id)}-${locationAlias}'
 
 
-param applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationAlias}'
-param applicationGatewayName string = 'agw-${workloadName}-${locationAlias}'
-param internalLoadBalancerIp string = '10.100.0.62'
+var applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationAlias}'
+var applicationGatewayName string = 'agw-${workloadName}-${locationAlias}'
+var internalLoadBalancerIp string = '10.100.0.62'
 var subnets = [
   {
     subnetAddrPrefix: aksSubnetAddrPrefix
