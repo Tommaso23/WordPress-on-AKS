@@ -318,7 +318,7 @@ module nsgAppGatewaySubnet './modules/networksecuritygroup.bicep' = {
           destinationAddressPrefix: 'VirtualNetwork'
           direction: 'Inbound'
           access: 'Allow'
-          priority: 100
+          priority: 110
         }
       }
       {
