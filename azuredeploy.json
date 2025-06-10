@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "8232049511033387792"
+      "templateHash": "17170958274423036287"
     }
   },
   "parameters": {
@@ -1721,7 +1721,7 @@
             "value": "[variables('location')]"
           },
           "networkSecurityGroupName": {
-            "value": "[format('nsg-aks-{0}', variables('aksSubnetName'))]"
+            "value": "[format('nsg-{0}', variables('aksSubnetName'))]"
           },
           "securityRules": {
             "value": []
@@ -1786,7 +1786,7 @@
             "value": "[variables('location')]"
           },
           "networkSecurityGroupName": {
-            "value": "[format('nsg-aks-{0}', variables('privateLinkSubnetName'))]"
+            "value": "[format('nsg-{0}', variables('privateLinkSubnetName'))]"
           },
           "securityRules": {
             "value": []
@@ -1851,10 +1851,39 @@
             "value": "[variables('location')]"
           },
           "networkSecurityGroupName": {
-            "value": "[format('nsg-aks-{0}', variables('appgatewaySubnetName'))]"
+            "value": "[format('nsg-{0}', variables('appgatewaySubnetName'))]"
           },
           "securityRules": {
-            "value": []
+            "value": [
+              {
+                "name": "AllowAllOutbound",
+                "properties": {
+                  "description": "",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "*",
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 1000,
+                  "direction": "Outbound"
+                }
+              },
+              {
+                "name": "AllowHealthProbesInbound",
+                "properties": {
+                  "description": "Allow Azure Health Probes in. (https://learn.microsoft.com/azure/application-gateway/configuration-infrastructure#network-security-groups)",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "sourceAddressPrefix": "AzureLoadBalancer",
+                  "destinationPortRange": "*",
+                  "destinationAddressPrefix": "*",
+                  "direction": "Inbound",
+                  "access": "Allow",
+                  "priority": 120
+                }
+              }
+            ]
           }
         },
         "template": {
@@ -1916,7 +1945,7 @@
             "value": "[variables('location')]"
           },
           "networkSecurityGroupName": {
-            "value": "[format('nsg-aks-{0}', variables('netappSubnetName'))]"
+            "value": "[format('nsg-{0}', variables('netappSubnetName'))]"
           },
           "securityRules": {
             "value": []
