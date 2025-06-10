@@ -50,7 +50,9 @@ var numberOf50GB int = 1
 // Key Vault //
 var keyVaultPrivateEndpointName string = 'pe-kv-${workloadName}-${locationAlias}'
 var keyVaultDnsZoneName = 'privatelink.vaultcore.azure.net'
-var keyVaultName string = 'kv-${workloadName}-${uniqueString(subscription().id)}-${locationAlias}'
+var uniqueStr = uniqueString(subscription().id)
+var uniqueId = take(uniqueStr, 8) 
+var keyVaultName string = 'kv-${workloadName}-${uniqueId}-${locationAlias}'
 
 
 var applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationAlias}'
