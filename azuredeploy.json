@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "2239631966675735320"
+      "templateHash": "13042328426231985441"
     }
   },
   "parameters": {
@@ -1894,7 +1894,7 @@
                   "destinationAddressPrefix": "*",
                   "direction": "Inbound",
                   "access": "Allow",
-                  "priority": 110
+                  "priority": 120
                 }
               },
               {
@@ -1908,7 +1908,7 @@
                   "destinationAddressPrefix": "*",
                   "direction": "Inbound",
                   "access": "Allow",
-                  "priority": 120
+                  "priority": 130
                 }
               },
               {
