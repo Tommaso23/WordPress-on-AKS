@@ -67,7 +67,7 @@ The deployment order respects resource dependencies and includes the following m
 The script handles connecting to the AKS cluster, retrieving necessary parameters, and applying the manifests in the correct sequence, ensuring a smooth and repeatable deployment process.
 
 ### Clone the Repository
-Start by cloning the repository and navigating to the folder containing the script and manifest files:
+Start by cloning the repository:
 ```bash
 git clone https://github.com/Tommaso23/Wordpress-on-AKS.git
 ```
