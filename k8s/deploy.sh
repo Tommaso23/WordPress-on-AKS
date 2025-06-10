@@ -2,8 +2,9 @@
 #Connessione al cluster AKS con az aks get-credentials...
 #!/bin/bash
 
-rg="rg-aks-bcp-itn"  # Replace with your resource group name
-cluster="aks-bcp-itn"  # Replace with your AKS cluster name
+rg="<INSERT-YOUR-RESOURCE-GROUP-HERE>"  # Replace with your resource group name
+cluster="<INSERT-YOUR-AKS-CLUSTER-NAME-HERE>"  # Replace with your AKS cluster name
+netappvolume="<INSERT-YOUR-NETAPP-VOLUME-HERE>" # Replace with your NetApp volume name
 
 echo "Connecting to AKS cluster..."
 az aks get-credentials --resource-group "$rg" --name "$cluster" --overwrite-existing
@@ -19,12 +20,14 @@ tenantid=$(az account show --query tenantId -o tsv)
 echo "Client ID: $clientid"
 echo "Key Vault: $keyvaultname"
 echo "Tenant ID: $tenantid"
+echo "NetApp Volume: $netappvolume"
 
-export clientid keyvaultname tenantid
+export clientid keyvaultname tenantid netappvolume
 
 # Generate final secretprovider.yaml with actual values
 echo "Generating 'secretprovider.yaml' from template..."
 envsubst < k8s/wordpress/secretprovider-temp.yaml > k8s/wordpress/secretprovider.yaml
+envsubst < k8s/wordpress/pv-wp-temp.yaml > k8s/wordpress/pv-wp.yaml
 
 # Apply Kubernetes manifests in order
 echo "Deploying YAML files to the cluster..."
