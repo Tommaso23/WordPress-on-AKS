@@ -308,6 +308,76 @@ module nsgAppGatewaySubnet './modules/networksecuritygroup.bicep' = {
     networkSecurityGroupName: 'nsg-${appgatewaySubnetName}'
     securityRules: [
       {
+        name: 'Allow443Inbound'
+        properties: {
+          description: ''
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          sourceAddressPrefix: 'Internet'
+          destinationPortRange: '443'
+          destinationAddressPrefix: 'VirtualNetwork'
+          direction: 'Inbound'
+          access: 'Allow'
+          priority: 100
+        }
+      }
+      {
+        name: 'Allow80Inbound'
+        properties: {
+          description: ''
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          sourceAddressPrefix: 'Internet'
+          destinationPortRange: '80'
+          destinationAddressPrefix: 'VirtualNetwork'
+          direction: 'Inbound'
+          access: 'Allow'
+          priority: 100
+        }
+      }
+      {
+        name: 'AllowControlPlaneInbound'
+        properties: {
+          description: ''
+          protocol: '*'
+          sourcePortRange: '*'
+          sourceAddressPrefix: 'GatewayManager'
+          destinationPortRange: '65200-65535'
+          destinationAddressPrefix: '*'
+          direction: 'Inbound'
+          access: 'Allow'
+          priority: 110
+        }
+      }
+      {
+        name: 'AllowHealthProbesInbound'
+        properties: {
+          description: ''
+          protocol: '*'
+          sourcePortRange: '*'
+          sourceAddressPrefix: 'AzureLoadBalancer'
+          destinationPortRange: '*'
+          destinationAddressPrefix: '*'
+          direction: 'Inbound'
+          access: 'Allow'
+          priority: 120
+        }
+      }
+      {
+        name: 'DenyAllInbound'
+        properties: {
+          description: 'No further inbound traffic allowed.'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          access: 'Deny'
+          priority: 1000
+          direction: 'Inbound'
+        }
+      }
+      {
         name: 'AllowAllOutbound'
         properties: {
           description: ''
@@ -319,20 +389,6 @@ module nsgAppGatewaySubnet './modules/networksecuritygroup.bicep' = {
           access: 'Allow'
           priority: 1000
           direction: 'Outbound'
-        }
-      }
-      {
-        name: 'AllowHealthProbesInbound'
-        properties: {
-          description: 'Allow Azure Health Probes in. (https://learn.microsoft.com/azure/application-gateway/configuration-infrastructure#network-security-groups)'
-          protocol: '*'
-          sourcePortRange: '*'
-          sourceAddressPrefix: 'AzureLoadBalancer'
-          destinationPortRange: '*'
-          destinationAddressPrefix: '*'
-          direction: 'Inbound'
-          access: 'Allow'
-          priority: 120
         }
       }
     ]
