@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "13042328426231985441"
+      "templateHash": "16094016430141450548"
     }
   },
   "parameters": {
@@ -63,7 +63,9 @@
     "numberOf50GB": 1,
     "keyVaultPrivateEndpointName": "[format('pe-kv-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]",
     "keyVaultDnsZoneName": "privatelink.vaultcore.azure.net",
-    "keyVaultName": "[format('kv-{0}-{1}-{2}', parameters('workloadName'), uniqueString(subscription().id), parameters('locationAlias'))]",
+    "uniqueStr": "[uniqueString(subscription().id)]",
+    "uniqueId": "[take(variables('uniqueStr'), 8)]",
+    "keyVaultName": "[format('kv-{0}-{1}-{2}', parameters('workloadName'), variables('uniqueId'), parameters('locationAlias'))]",
     "applicationGatewayPublicIpAddressName": "[format('agw-pip-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]",
     "applicationGatewayName": "[format('agw-{0}-{1}', parameters('workloadName'), parameters('locationAlias'))]",
     "internalLoadBalancerIp": "10.100.0.62"
