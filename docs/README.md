@@ -93,7 +93,7 @@ az account show
 ```
 Once everything is set, you can proceed to run the deployment script, which you can find at [k8s/deploy.sh](../k8s/deploy.sh)
 
->⚠️ Before running it, make sure to edit the script and set your AKS resource group and cluster name at the top.
+>⚠️ Before running it, make sure to edit the script and set your AKS resource group, cluster name and NetApp volume at the top.
 
 ## Future Improvements
 The following points highlight potential enhancements to increase security, performance, and manageability of the current architecture:
