@@ -10,6 +10,7 @@ var resourceGroupName string = 'rg-aks-${workloadName}-${locationAlias}'
 var virtualNetworkName string = 'vnet-aks-${workloadName}-${locationAlias}'
 var vnetAddrPrefix string = '10.100.0.0/24'
 
+// Subnets //
 var aksSubnetName string = 'snet-clusternodes-aks'
 var aksSubnetAddrPrefix string = '10.100.0.0/26'
 var appgatewaySubnetName string = 'snet-agw-aks'
@@ -22,6 +23,7 @@ var netappSubnetAddrPrefix string = '10.100.0.144/28'
 var mysqlPrivateEndpointName string = 'pe-mysql-${workloadName}-${locationAlias}'
 var mySqlDnsZoneName = 'privatelink.mysql.database.azure.com'
 
+// MySQL Database //
 var sqlServerName string = 'sql-${workloadName}-${locationAlias}'
 param sqlAdministratorLogin string
 @secure()
@@ -54,9 +56,10 @@ var uniqueStr = uniqueString(subscription().id)
 var uniqueId = take(uniqueStr, 8) 
 var keyVaultName string = 'kv-${workloadName}-${uniqueId}-${locationAlias}'
 
-
+// Application Gateway //
 var applicationGatewayPublicIpAddressName string = 'agw-pip-${workloadName}-${locationAlias}'
 var applicationGatewayName string = 'agw-${workloadName}-${locationAlias}'
+
 var internalLoadBalancerIp string = '10.100.0.62'
 var subnets = [
   {

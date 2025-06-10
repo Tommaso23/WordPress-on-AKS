@@ -1,5 +1,5 @@
 
-#Connessione al cluster AKS con az aks get-credentials...
+#Connecting to the AKS cluster with az aks get-credentials...
 #!/bin/bash
 
 rg="<INSERT-YOUR-RESOURCE-GROUP-HERE>"  # Replace with your resource group name
@@ -24,7 +24,7 @@ echo "NetApp Volume: $netappvolume"
 
 export clientid keyvaultname tenantid netappvolume
 
-# Generate final secretprovider.yaml with actual values
+# Generate final secretprovider.yaml and persistentvolume.yaml with actual values
 echo "Generating 'secretprovider.yaml' from template..."
 envsubst < k8s/wordpress/secretprovider-temp.yaml > k8s/wordpress/secretprovider.yaml
 envsubst < k8s/wordpress/pv-wp-temp.yaml > k8s/wordpress/pv-wp.yaml
