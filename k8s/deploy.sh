@@ -32,6 +32,7 @@ envsubst < k8s/wordpress/pv-wp-temp.yaml > k8s/wordpress/pv-wp.yaml
 # Apply Kubernetes manifests in order
 echo "Deploying YAML files to the cluster..."
 cd k8s/wordpress
+
 kubectl apply -f namespace.yaml
 kubectl apply -f pv-wp.yaml
 kubectl apply -f pvc-wp.yaml
