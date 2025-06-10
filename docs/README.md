@@ -42,7 +42,7 @@ The entire infrastructure for this project can be deployed easily using the Depl
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FTommaso23%2FWordpress-on-AKS%2Frefs%2Fheads%2Fmain%2Fazuredeploy.json)
 
 ## Kubernetes Deployment
-The Kubernetes resources for the WordPress application are deployed in a structured and automated way using the provided Bash script. All workload components, including persistent volume claims, secrets, deployments, and services, are deployed within a dedicated namespace called wordpress to ensure isolation and manageability.
+The Kubernetes resources for the WordPress application are deployed in a structured and automated way using the provided Bash script. All workload components, including persistent volume claims, deployments, and services, are deployed within a dedicated namespace called wordpress to ensure isolation and manageability.
 
 The NGINX Ingress Controller and its related resources are deployed separately in their own dedicated namespace to isolate ingress traffic management from the application workload.
 
@@ -58,7 +58,7 @@ The deployment order respects resource dependencies and includes the following m
 
 - `nginx.yaml` (NGINX ingress resource)
 
-- `secretprovider.yaml` (secrets injected via Azure Key Vault CSI driver, populated dynamically)
+- `secretprovider.yaml` (secrets injected via Azure Key Vault CSI driver)
 
 - `deployment-wp.yaml` (WordPress deployment)
 
@@ -66,7 +66,34 @@ The deployment order respects resource dependencies and includes the following m
 
 The script handles connecting to the AKS cluster, retrieving necessary parameters, and applying the manifests in the correct sequence, ensuring a smooth and repeatable deployment process.
 
-You can find the deployment script at [k8s/deploy.sh](k8s/deploy.sh)
+### Clone the Repository
+Start by cloning the repository and navigating to the folder containing the script and manifest files:
+```bash
+git clone https://github.com/Tommaso23/Wordpress-on-AKS.git
+```
+### Prerequisities
+Ensure the following tools are installed and accessible in your environment:
+- Azure CLI
+- kubectl
+- bash (Linux/macOS/WSL or Git Bash on Windows)
+
+Before running the script, make sure to:
+
+1 Log in to your Azure account:
+```bash
+az login
+```
+2 Set the correct subscription and tenant context
+```bash
+az account set --subscription "<your-subscription-id>"
+```
+You can verify the current context with:
+```bash
+az account show
+```
+Once everything is set, you can proceed to run the deployment script, which you can find the at [k8s/deploy.sh](k8s/deploy.sh)
+
+>⚠️ Before running it, make sure to edit the script and set your AKS resource group and cluster name at the top.
 
 ## Future Improvements
 The following points highlight potential enhancements to increase security, performance, and manageability of the current architecture:
