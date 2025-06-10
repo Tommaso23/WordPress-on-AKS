@@ -346,7 +346,7 @@ module nsgAppGatewaySubnet './modules/networksecuritygroup.bicep' = {
           destinationAddressPrefix: '*'
           direction: 'Inbound'
           access: 'Allow'
-          priority: 110
+          priority: 120
         }
       }
       {
@@ -360,7 +360,7 @@ module nsgAppGatewaySubnet './modules/networksecuritygroup.bicep' = {
           destinationAddressPrefix: '*'
           direction: 'Inbound'
           access: 'Allow'
-          priority: 120
+          priority: 130
         }
       }
       {
