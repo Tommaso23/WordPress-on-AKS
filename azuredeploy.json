@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "13593475870562451854"
+      "templateHash": "2239631966675735320"
     }
   },
   "parameters": {
@@ -1866,7 +1866,7 @@
                   "destinationAddressPrefix": "VirtualNetwork",
                   "direction": "Inbound",
                   "access": "Allow",
-                  "priority": 100
+                  "priority": 110
                 }
               },
               {
