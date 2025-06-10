@@ -91,7 +91,7 @@ You can verify the current context with:
 ```bash
 az account show
 ```
-Once everything is set, you can proceed to run the deployment script, which you can find at [deploy.sh](../k8s/deploy.sh)
+Once everything is set, you can proceed to run the deployment script, which you can find at [k8s/deploy.sh](../k8s/deploy.sh)
 
 >⚠️ Before running it, make sure to edit the script and set your AKS resource group and cluster name at the top.
 
