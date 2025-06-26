@@ -34,7 +34,7 @@ For persistent volume claims, this architecture uses Azure NetApp Files with NFS
 The database layer is managed using Azure Database for MySQL – Flexible Server, a fully managed relational database service that provides built-in high availability, automated backups, and scaling capabilities. It serves as the backend for WordPress without requiring further configuration inside the Kubernetes environment.
 
 ### Private Endpoint
-To improve network security and compliance, this architecture uses Private Endpoints for all key Azure PaaS services. Private Endpoints assign private IPs within the Virtual Network, ensuring all traffic to Key Vault, NetApp Files, MySQL, and Application Gateway stays on the Azure backbone. This prevents exposure to the public internet, reducing the attack surface, and restricts access to authorized VNet subnets only. This setup provides strong isolation and aligns with enterprise security best practices
+To improve network security and compliance, this architecture uses Private Endpoints for all key Azure PaaS services. By assigning private IP addresses within the virtual network, services such as Key Vault and MySQL are accessed securely without traversing the public internet. This configuration minimizes the attack surface and restricts access to authorized VNet subnets only. This setup provides strong isolation and aligns with enterprise security best practices
 
 ## Infrastructure Deployment
 The entire infrastructure for this project can be deployed easily using the Deploy to Azure button below. This triggers the deployment of all required Azure resources, including the AKS cluster, Key Vault, NetApp Files, MySQL database, and Application Gateway, fully configured and ready for the application workload.
