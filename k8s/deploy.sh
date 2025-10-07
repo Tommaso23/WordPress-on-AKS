@@ -2,9 +2,9 @@
 #Connecting to the AKS cluster with az aks get-credentials...
 #!/bin/bash
 
-rg="<INSERT-YOUR-RESOURCE-GROUP-HERE>"  # Replace with your resource group name
-cluster="<INSERT-YOUR-AKS-CLUSTER-NAME-HERE>"  # Replace with your AKS cluster name
-netappvolume="<INSERT-YOUR-NETAPP-VOLUME-HERE>" # Replace with your NetApp volume name
+rg="rg-aks-norm-itn"  # Replace with your resource group name
+cluster="aks-norm-itn"  # Replace with your AKS cluster name
+netappvolume="vol-norm-itn" # Replace with your NetApp volume name
 
 echo "Connecting to AKS cluster..."
 az aks get-credentials --resource-group "$rg" --name "$cluster" --overwrite-existing
@@ -31,7 +31,7 @@ envsubst < k8s/wordpress/pv-wp-temp.yaml > k8s/wordpress/pv-wp.yaml
 
 # Apply Kubernetes manifests in order
 echo "Deploying YAML files to the cluster..."
-cd k8s/wordpress
+cd wordpress
 
 kubectl apply -f namespace.yaml
 kubectl apply -f pv-wp.yaml

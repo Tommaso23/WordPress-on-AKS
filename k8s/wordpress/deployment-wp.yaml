@@ -59,7 +59,7 @@ spec:
       volumes:
       - name: wordpress-storage
         persistentVolumeClaim:
-          claimName: pvc-nfs
+          claimName: pvc-nfs //same of the name of pvc
       - name: secrets-store
         csi:
           driver: secrets-store.csi.k8s.io
