@@ -2,9 +2,9 @@
 #Connecting to the AKS cluster with az aks get-credentials...
 #!/bin/bash
 
-rg="rg-aks-norm-itn"  # Replace with your resource group name
-cluster="aks-norm-itn"  # Replace with your AKS cluster name
-netappvolume="vol-norm-itn" # Replace with your NetApp volume name
+rg="<your-resource-group-name>"  # Replace with your resource group name
+cluster="<your-aks-cluster-name>"  # Replace with your AKS cluster name
+netappvolume="<your-netapp-volume-name>" # Replace with your NetApp volume name
 
 echo "Connecting to AKS cluster..."
 az aks get-credentials --resource-group "$rg" --name "$cluster" --overwrite-existing
