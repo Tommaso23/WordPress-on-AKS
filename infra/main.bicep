@@ -118,7 +118,7 @@ module aksVirtualnetwork 'modules/virtualnetwork.bicep' = {
     aksResourceGroup
   ]
 }
-
+/*
 module mysql './modules/mysql.bicep' = {
   name: 'mysql'
   scope: resourceGroup(resourceGroupName)
@@ -165,6 +165,7 @@ module mySQLPrivateEndpoint './modules/privateendpoint.bicep' = {
     aksResourceGroup
   ]
 }
+*/
 
 module aksCluster './modules/akscluster.bicep' = {
   name: 'aksCluster'
@@ -181,7 +182,7 @@ module aksCluster './modules/akscluster.bicep' = {
     nodeResourceGroupName: nodeResourceGroupName
   }
 }
-
+/*
 module netapp './modules/netapp.bicep' = {
   name: 'netapp'
   scope: resourceGroup(resourceGroupName)
@@ -201,7 +202,7 @@ module netapp './modules/netapp.bicep' = {
     aksResourceGroup
   ]
 }
-
+*/
 module appGatewayPublicIpAddress './modules/publicipaddress.bicep' = {
   name: 'appGatewayPublicIpAddress'
   scope: resourceGroup(resourceGroupName)
@@ -266,7 +267,7 @@ module keyVault './modules/keyvault.bicep' = {
   params: {
     keyVaultName: keyVaultName
     location: location
-    mySqlConnectionString: mysql.outputs.connectionString
+    mySqlConnectionString: ''
     mySqlUser: sqlAdministratorLogin
     mySqlPassword: sqlAdministratorLoginPassword
     mySqlDBName: databaseName

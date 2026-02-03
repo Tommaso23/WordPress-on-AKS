@@ -1,0 +1,30 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: busybox
+  namespace: testfileshare
+spec:
+  containers:
+    - name: busybox
+      image: registry.k8s.io/e2e-test-images/busybox:1.29-4
+      command:
+        - "/bin/sleep"
+        - "10000"
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      volumeMounts:
+      - name: secrets-store01-inline
+        mountPath: "/mnt/secrets-store"
+        readOnly: true
+  volumes:
+    - name: secrets-store01-inline
+      csi:
+        driver: secrets-store.csi.k8s.io
+        readOnly: true
+        volumeAttributes:
+          secretProviderClass: "keyvault-secret-class"
