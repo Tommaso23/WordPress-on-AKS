@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.38.33.27573",
-      "templateHash": "8228214023645027681"
+      "version": "0.40.2.10011",
+      "templateHash": "4873584616226686043"
     }
   },
   "parameters": {
@@ -95,8 +95,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "4514545856339129344"
+              "version": "0.40.2.10011",
+              "templateHash": "16268264564329608044"
             }
           },
           "parameters": {
@@ -181,8 +181,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "13999726719667309165"
+              "version": "0.40.2.10011",
+              "templateHash": "14714661538911149173"
             }
           },
           "parameters": {
@@ -265,344 +265,6 @@
         "nsgPrivateLinkSubnet"
       ]
     },
-    "mysql": {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2025-04-01",
-      "name": "mysql",
-      "resourceGroup": "[variables('resourceGroupName')]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "sqlServerName": {
-            "value": "[variables('sqlServerName')]"
-          },
-          "location": {
-            "value": "[variables('location')]"
-          },
-          "sqlAdministratorLogin": {
-            "value": "[parameters('sqlAdministratorLogin')]"
-          },
-          "sqlAdministratorLoginPassword": {
-            "value": "[parameters('sqlAdministratorLoginPassword')]"
-          },
-          "sqlVersion": {
-            "value": "[variables('sqlVersion')]"
-          },
-          "databaseName": {
-            "value": "[variables('databaseName')]"
-          },
-          "sqlServerSKU": {
-            "value": "[variables('sqlServerSKU')]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "18394058491060714379"
-            }
-          },
-          "parameters": {
-            "sqlServerName": {
-              "type": "string"
-            },
-            "location": {
-              "type": "string"
-            },
-            "sqlAdministratorLogin": {
-              "type": "string"
-            },
-            "sqlAdministratorLoginPassword": {
-              "type": "securestring"
-            },
-            "databaseName": {
-              "type": "string"
-            },
-            "sqlVersion": {
-              "type": "string"
-            },
-            "sqlServerSKU": {
-              "type": "string"
-            }
-          },
-          "resources": [
-            {
-              "type": "Microsoft.DBforMySQL/flexibleServers",
-              "apiVersion": "2023-12-30",
-              "name": "[parameters('sqlServerName')]",
-              "location": "[parameters('location')]",
-              "properties": {
-                "administratorLogin": "[parameters('sqlAdministratorLogin')]",
-                "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
-                "version": "[parameters('sqlVersion')]",
-                "network": {
-                  "publicNetworkAccess": "Disabled"
-                },
-                "storage": {
-                  "storageSizeGB": 20,
-                  "iops": 360
-                }
-              },
-              "sku": {
-                "name": "[parameters('sqlServerSKU')]",
-                "tier": "Burstable"
-              }
-            },
-            {
-              "type": "Microsoft.DBforMySQL/flexibleServers/databases",
-              "apiVersion": "2023-12-30",
-              "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('databaseName'))]",
-              "properties": {
-                "collation": "utf8mb3_general_ci"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.DBforMySQL/flexibleServers/firewallRules",
-              "apiVersion": "2023-12-30",
-              "name": "[format('{0}/{1}', parameters('sqlServerName'), 'AllowAzureIPs')]",
-              "properties": {
-                "startIpAddress": "0.0.0.0",
-                "endIpAddress": "0.0.0.0"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.DBforMySQL/flexibleServers/databases', parameters('sqlServerName'), parameters('databaseName'))]",
-                "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.DBforMySQL/flexibleServers/configurations",
-              "apiVersion": "2023-06-30",
-              "name": "[format('{0}/{1}', parameters('sqlServerName'), 'require_secure_transport')]",
-              "properties": {
-                "value": "OFF",
-                "source": "user-override"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName'))]"
-              ]
-            }
-          ],
-          "outputs": {
-            "sqlServerId": {
-              "type": "string",
-              "value": "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName'))]"
-            },
-            "connectionString": {
-              "type": "string",
-              "value": "[reference(resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('sqlServerName')), '2023-12-30').fullyQualifiedDomainName]"
-            }
-          }
-        }
-      },
-      "dependsOn": [
-        "aksResourceGroup"
-      ]
-    },
-    "mySqlPrivateDnsZone": {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2025-04-01",
-      "name": "mySqlPrivateDnsZone",
-      "resourceGroup": "[variables('resourceGroupName')]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "dnsZoneName": {
-            "value": "[variables('mySqlDnsZoneName')]"
-          },
-          "virtualNetworkName": {
-            "value": "[variables('virtualNetworkName')]"
-          },
-          "virtualNetworkId": {
-            "value": "[reference('aksVirtualnetwork').outputs.vnetId.value]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "16966298960962789048"
-            }
-          },
-          "parameters": {
-            "dnsZoneName": {
-              "type": "string"
-            },
-            "virtualNetworkName": {
-              "type": "string"
-            },
-            "virtualNetworkId": {
-              "type": "string"
-            }
-          },
-          "resources": [
-            {
-              "type": "Microsoft.Network/privateDnsZones",
-              "apiVersion": "2024-06-01",
-              "name": "[parameters('dnsZoneName')]",
-              "location": "global",
-              "properties": {}
-            },
-            {
-              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-              "apiVersion": "2024-06-01",
-              "name": "[format('{0}/{1}', parameters('dnsZoneName'), format('vlink-{0}', parameters('virtualNetworkName')))]",
-              "location": "global",
-              "properties": {
-                "registrationEnabled": false,
-                "virtualNetwork": {
-                  "id": "[parameters('virtualNetworkId')]"
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/privateDnsZones', parameters('dnsZoneName'))]"
-              ]
-            }
-          ],
-          "outputs": {
-            "dnsZoneId": {
-              "type": "string",
-              "value": "[resourceId('Microsoft.Network/privateDnsZones', parameters('dnsZoneName'))]"
-            }
-          }
-        }
-      },
-      "dependsOn": [
-        "aksResourceGroup",
-        "aksVirtualnetwork"
-      ]
-    },
-    "mySQLPrivateEndpoint": {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2025-04-01",
-      "name": "mySQLPrivateEndpoint",
-      "resourceGroup": "[variables('resourceGroupName')]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "location": {
-            "value": "[variables('location')]"
-          },
-          "privateEndpointName": {
-            "value": "[variables('mysqlPrivateEndpointName')]"
-          },
-          "subnetPrivateEndpointId": {
-            "value": "[reference('aksVirtualnetwork').outputs.privateLinkSubnetId.value]"
-          },
-          "linkedResourceId": {
-            "value": "[reference('mysql').outputs.sqlServerId.value]"
-          },
-          "serviceName": {
-            "value": "mysqlServer"
-          },
-          "privateDnsZoneId": {
-            "value": "[reference('mySqlPrivateDnsZone').outputs.dnsZoneId.value]"
-          },
-          "virtualNetworkName": {
-            "value": "[variables('virtualNetworkName')]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "5889780808302649118"
-            }
-          },
-          "parameters": {
-            "location": {
-              "type": "string"
-            },
-            "privateEndpointName": {
-              "type": "string"
-            },
-            "subnetPrivateEndpointId": {
-              "type": "string"
-            },
-            "linkedResourceId": {
-              "type": "string"
-            },
-            "serviceName": {
-              "type": "string"
-            },
-            "privateDnsZoneId": {
-              "type": "string"
-            },
-            "virtualNetworkName": {
-              "type": "string"
-            }
-          },
-          "resources": [
-            {
-              "type": "Microsoft.Network/privateEndpoints",
-              "apiVersion": "2024-05-01",
-              "name": "[parameters('privateEndpointName')]",
-              "location": "[parameters('location')]",
-              "properties": {
-                "subnet": {
-                  "id": "[parameters('subnetPrivateEndpointId')]"
-                },
-                "privateLinkServiceConnections": [
-                  {
-                    "name": "[parameters('privateEndpointName')]",
-                    "properties": {
-                      "privateLinkServiceId": "[parameters('linkedResourceId')]",
-                      "groupIds": [
-                        "[parameters('serviceName')]"
-                      ]
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
-              "apiVersion": "2024-05-01",
-              "name": "[format('{0}/{1}', parameters('privateEndpointName'), 'default')]",
-              "properties": {
-                "privateDnsZoneConfigs": [
-                  {
-                    "name": "[format('privatelink.{0}.azure.com', parameters('serviceName'))]",
-                    "properties": {
-                      "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
-                    }
-                  }
-                ]
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpointName'))]"
-              ]
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "aksResourceGroup",
-        "aksVirtualnetwork",
-        "mySqlPrivateDnsZone",
-        "mysql"
-      ]
-    },
     "aksCluster": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
@@ -648,8 +310,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "16080116388877329171"
+              "version": "0.40.2.10011",
+              "templateHash": "12446379220521742989"
             }
           },
           "parameters": {
@@ -871,7 +533,7 @@
             {
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
-              "scope": "[format('Microsoft.Network/virtualNetworks/{0}', parameters('aksVirtualNetworkName'))]",
+              "scope": "[resourceId('Microsoft.Network/virtualNetworks', parameters('aksVirtualNetworkName'))]",
               "name": "[guid(parameters('roleDefinitionId'), resourceGroup().id)]",
               "properties": {
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
@@ -885,188 +547,6 @@
         }
       },
       "dependsOn": [
-        "aksVirtualnetwork"
-      ]
-    },
-    "netapp": {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2025-04-01",
-      "name": "netapp",
-      "resourceGroup": "[variables('resourceGroupName')]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "location": {
-            "value": "[variables('location')]"
-          },
-          "netappAccountName": {
-            "value": "[variables('netappAccountName')]"
-          },
-          "capacityPoolName": {
-            "value": "[variables('capacityPoolName')]"
-          },
-          "volumeName": {
-            "value": "[variables('volumeName')]"
-          },
-          "serviceLevel": {
-            "value": "[variables('serviceLevel')]"
-          },
-          "numberOfTB": {
-            "value": "[variables('numberOfTB')]"
-          },
-          "qosType": {
-            "value": "[variables('qosType')]"
-          },
-          "numberOf50GB": {
-            "value": "[variables('numberOf50GB')]"
-          },
-          "netappSubnetId": {
-            "value": "[reference('aksVirtualnetwork').outputs.netappSubnetId.value]"
-          },
-          "aksSubnetAddrPrefix": {
-            "value": "[variables('aksSubnetAddrPrefix')]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "7093238021443713708"
-            }
-          },
-          "parameters": {
-            "netappAccountName": {
-              "type": "string"
-            },
-            "location": {
-              "type": "string"
-            },
-            "capacityPoolName": {
-              "type": "string"
-            },
-            "serviceLevel": {
-              "type": "string"
-            },
-            "numberOfTB": {
-              "type": "int"
-            },
-            "qosType": {
-              "type": "string"
-            },
-            "volumeName": {
-              "type": "string"
-            },
-            "netappSubnetId": {
-              "type": "string"
-            },
-            "numberOf50GB": {
-              "type": "int"
-            },
-            "aksSubnetAddrPrefix": {
-              "type": "string"
-            }
-          },
-          "variables": {
-            "capacityPoolSize": "[mul(json('1099511627776'), parameters('numberOfTB'))]",
-            "volumeSize": "[mul(json('53687091200'), parameters('numberOf50GB'))]"
-          },
-          "resources": [
-            {
-              "type": "Microsoft.NetApp/netAppAccounts",
-              "apiVersion": "2025-01-01",
-              "name": "[parameters('netappAccountName')]",
-              "location": "[parameters('location')]",
-              "properties": {
-                "encryption": {
-                  "keySource": "Microsoft.NetApp"
-                }
-              }
-            },
-            {
-              "type": "Microsoft.NetApp/netAppAccounts/capacityPools",
-              "apiVersion": "2025-01-01",
-              "name": "[format('{0}/{1}', parameters('netappAccountName'), parameters('capacityPoolName'))]",
-              "location": "[parameters('location')]",
-              "properties": {
-                "serviceLevel": "[parameters('serviceLevel')]",
-                "size": "[variables('capacityPoolSize')]",
-                "qosType": "[parameters('qosType')]",
-                "encryptionType": "Single",
-                "coolAccess": false
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.NetApp/netAppAccounts', parameters('netappAccountName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
-              "apiVersion": "2025-01-01",
-              "name": "[format('{0}/{1}/{2}', parameters('netappAccountName'), parameters('capacityPoolName'), parameters('volumeName'))]",
-              "location": "[parameters('location')]",
-              "properties": {
-                "serviceLevel": "[parameters('serviceLevel')]",
-                "creationToken": "[parameters('volumeName')]",
-                "usageThreshold": "[variables('volumeSize')]",
-                "exportPolicy": {
-                  "rules": [
-                    {
-                      "ruleIndex": 1,
-                      "unixReadOnly": false,
-                      "unixReadWrite": true,
-                      "cifs": false,
-                      "nfsv3": true,
-                      "nfsv41": false,
-                      "allowedClients": "[parameters('aksSubnetAddrPrefix')]",
-                      "kerberos5ReadOnly": false,
-                      "kerberos5ReadWrite": false,
-                      "kerberos5iReadOnly": false,
-                      "kerberos5iReadWrite": false,
-                      "kerberos5pReadOnly": false,
-                      "kerberos5pReadWrite": false,
-                      "hasRootAccess": true,
-                      "chownMode": "Unrestricted"
-                    }
-                  ]
-                },
-                "protocolTypes": [
-                  "NFSv3"
-                ],
-                "subnetId": "[parameters('netappSubnetId')]",
-                "networkFeatures": "Standard",
-                "snapshotDirectoryVisible": true,
-                "kerberosEnabled": false,
-                "securityStyle": "Unix",
-                "smbEncryption": false,
-                "smbContinuouslyAvailable": false,
-                "encryptionKeySource": "Microsoft.NetApp",
-                "ldapEnabled": false,
-                "unixPermissions": "0775",
-                "coolAccess": false,
-                "avsDataStore": "Disabled",
-                "isDefaultQuotaEnabled": false,
-                "defaultUserQuotaInKiBs": 0,
-                "defaultGroupQuotaInKiBs": 0,
-                "enableSubvolumes": "Disabled",
-                "smbNonBrowsable": "Disabled",
-                "smbAccessBasedEnumeration": "Disabled",
-                "deleteBaseSnapshot": false,
-                "isLargeVolume": false
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', parameters('netappAccountName'), parameters('capacityPoolName'))]"
-              ]
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "aksResourceGroup",
         "aksVirtualnetwork"
       ]
     },
@@ -1094,8 +574,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "15338653451763538537"
+              "version": "0.40.2.10011",
+              "templateHash": "736250435200414437"
             }
           },
           "parameters": {
@@ -1175,8 +655,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "9019300276573012331"
+              "version": "0.40.2.10011",
+              "templateHash": "10197036428171315491"
             }
           },
           "parameters": {
@@ -1374,8 +854,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "5889780808302649118"
+              "version": "0.40.2.10011",
+              "templateHash": "15421383577783706795"
             }
           },
           "parameters": {
@@ -1479,8 +959,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "16966298960962789048"
+              "version": "0.40.2.10011",
+              "templateHash": "7693079441511104343"
             }
           },
           "parameters": {
@@ -1549,7 +1029,7 @@
             "value": "[variables('location')]"
           },
           "mySqlConnectionString": {
-            "value": "[reference('mysql').outputs.connectionString.value]"
+            "value": ""
           },
           "mySqlUser": {
             "value": "[parameters('sqlAdministratorLogin')]"
@@ -1573,8 +1053,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "12006848589369006555"
+              "version": "0.40.2.10011",
+              "templateHash": "3611503315313589014"
             }
           },
           "parameters": {
@@ -1683,7 +1163,7 @@
             {
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
-              "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('keyVaultName'))]",
+              "scope": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
               "name": "[guid(parameters('roleDefinitionId'), resourceGroup().id)]",
               "properties": {
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
@@ -1704,8 +1184,7 @@
       },
       "dependsOn": [
         "aksResourceGroup",
-        "keyVaultPrivateDnsZone",
-        "mysql"
+        "keyVaultPrivateDnsZone"
       ]
     },
     "nsgClusterSubnet": {
@@ -1735,8 +1214,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "158302106311280216"
+              "version": "0.40.2.10011",
+              "templateHash": "16345188987273554564"
             }
           },
           "parameters": {
@@ -1800,8 +1279,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "158302106311280216"
+              "version": "0.40.2.10011",
+              "templateHash": "16345188987273554564"
             }
           },
           "parameters": {
@@ -1950,8 +1429,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "158302106311280216"
+              "version": "0.40.2.10011",
+              "templateHash": "16345188987273554564"
             }
           },
           "parameters": {
@@ -2015,8 +1494,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.38.33.27573",
-              "templateHash": "158302106311280216"
+              "version": "0.40.2.10011",
+              "templateHash": "16345188987273554564"
             }
           },
           "parameters": {
