@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.36.1.42791",
-      "templateHash": "16094016430141450548"
+      "version": "0.38.33.27573",
+      "templateHash": "8228214023645027681"
     }
   },
   "parameters": {
@@ -73,7 +73,7 @@
   "resources": {
     "aksResourceGroup": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "aksResourceGroup",
       "location": "[deployment().location]",
       "properties": {
@@ -95,8 +95,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "8510514467171941033"
+              "version": "0.38.33.27573",
+              "templateHash": "4514545856339129344"
             }
           },
           "parameters": {
@@ -120,7 +120,7 @@
     },
     "aksVirtualnetwork": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "aksVirtualnetwork",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -181,8 +181,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "4076115468029314281"
+              "version": "0.38.33.27573",
+              "templateHash": "13999726719667309165"
             }
           },
           "parameters": {
@@ -267,7 +267,7 @@
     },
     "mysql": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "mysql",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -304,8 +304,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "9257226833745729387"
+              "version": "0.38.33.27573",
+              "templateHash": "18394058491060714379"
             }
           },
           "parameters": {
@@ -409,7 +409,7 @@
     },
     "mySqlPrivateDnsZone": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "mySqlPrivateDnsZone",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -434,8 +434,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "3047665738206839646"
+              "version": "0.38.33.27573",
+              "templateHash": "16966298960962789048"
             }
           },
           "parameters": {
@@ -488,7 +488,7 @@
     },
     "mySQLPrivateEndpoint": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "mySQLPrivateEndpoint",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -525,8 +525,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "5965447070968227322"
+              "version": "0.38.33.27573",
+              "templateHash": "5889780808302649118"
             }
           },
           "parameters": {
@@ -605,7 +605,7 @@
     },
     "aksCluster": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "aksCluster",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -648,8 +648,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "12556831139909450374"
+              "version": "0.38.33.27573",
+              "templateHash": "16080116388877329171"
             }
           },
           "parameters": {
@@ -890,7 +890,7 @@
     },
     "netapp": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "netapp",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -936,8 +936,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "1672994356497726903"
+              "version": "0.38.33.27573",
+              "templateHash": "7093238021443713708"
             }
           },
           "parameters": {
@@ -1072,7 +1072,7 @@
     },
     "appGatewayPublicIpAddress": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "appGatewayPublicIpAddress",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -1094,8 +1094,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "12675429179594246047"
+              "version": "0.38.33.27573",
+              "templateHash": "15338653451763538537"
             }
           },
           "parameters": {
@@ -1144,7 +1144,7 @@
     },
     "applicationGateway": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "applicationGateway",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -1175,8 +1175,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "18414898197963798841"
+              "version": "0.38.33.27573",
+              "templateHash": "9019300276573012331"
             }
           },
           "parameters": {
@@ -1337,7 +1337,7 @@
     },
     "keyVaultPrivateEndpoint": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "keyVaultPrivateEndpoint",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -1374,8 +1374,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "5965447070968227322"
+              "version": "0.38.33.27573",
+              "templateHash": "5889780808302649118"
             }
           },
           "parameters": {
@@ -1454,7 +1454,7 @@
     },
     "keyVaultPrivateDnsZone": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "KeyVaultPrivateDnsZone",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -1479,8 +1479,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "3047665738206839646"
+              "version": "0.38.33.27573",
+              "templateHash": "16966298960962789048"
             }
           },
           "parameters": {
@@ -1533,7 +1533,7 @@
     },
     "keyVault": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "keyVault",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -1573,8 +1573,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "6337112388542602861"
+              "version": "0.38.33.27573",
+              "templateHash": "12006848589369006555"
             }
           },
           "parameters": {
@@ -1710,7 +1710,7 @@
     },
     "nsgClusterSubnet": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "nsgClusterSubnet",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -1735,8 +1735,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "11290132843104703737"
+              "version": "0.38.33.27573",
+              "templateHash": "158302106311280216"
             }
           },
           "parameters": {
@@ -1775,7 +1775,7 @@
     },
     "nsgPrivateLinkSubnet": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "nsgPrivateLinkSubnet",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -1800,8 +1800,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "11290132843104703737"
+              "version": "0.38.33.27573",
+              "templateHash": "158302106311280216"
             }
           },
           "parameters": {
@@ -1840,7 +1840,7 @@
     },
     "nsgAppGatewaySubnet": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "nsgAppGatewaySubnet",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -1950,8 +1950,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "11290132843104703737"
+              "version": "0.38.33.27573",
+              "templateHash": "158302106311280216"
             }
           },
           "parameters": {
@@ -1990,7 +1990,7 @@
     },
     "nsgNetAppSubnet": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "nsgNetAppSubnet",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -2015,8 +2015,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "11290132843104703737"
+              "version": "0.38.33.27573",
+              "templateHash": "158302106311280216"
             }
           },
           "parameters": {
