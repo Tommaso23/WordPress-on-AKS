@@ -3,6 +3,6 @@ src/
 utils/
 vscode/
 test/
-tls/
+tls-test/
 
 
